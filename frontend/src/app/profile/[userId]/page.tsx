@@ -18,7 +18,7 @@ interface ProfilePageProps {
 }
 
 export default function PublicProfilePage({ params }: ProfilePageProps) {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'activity' | 'watchlist'>('activity');
 
   const { data: profileData, isLoading, error } = useQuery({
