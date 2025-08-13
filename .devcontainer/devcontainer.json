@@ -1,0 +1,74 @@
+{
+  "name": "Music Monitor Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:18",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  
+  "postCreateCommand": "pnpm install && cd backend && pnpm install && cd ../frontend && pnpm install",
+  
+  "forwardPorts": [3000, 3001, 5432],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Backend API",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vsliveshare.vsliveshare",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "prisma.prisma",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "Gruntfuggly.todo-tree",
+        "wayou.vscode-todo-highlight",
+        "mikestead.dotenv",
+        "formulahendry.auto-rename-tag",
+        "naumovs.color-highlight"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        },
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.next": true,
+          "**/dist": true
+        }
+      }
+    }
+  },
+  
+  "remoteEnv": {
+    "NODE_ENV": "development"
+  },
+  
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
+  }
+}
