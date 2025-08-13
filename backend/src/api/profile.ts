@@ -58,7 +58,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       if (!user) {
-        return __reply.code(404).send({ error: 'User not found' });
+        return _reply.code(404).send({ error: 'User not found' });
       }
 
       return { data: user };
@@ -66,7 +66,7 @@ export async function profileApi(fastify: FastifyInstance) {
   );
 
   // Get any user's public profile (respects privacy settings)
-  fastify.get('/user/:userId', async (request, reply) => {
+  fastify.get('/user/:userId', async (request, _reply) => {
     const { userId } = request.params as { userId: string };
     
     // Get viewer ID if authenticated
@@ -108,7 +108,7 @@ export async function profileApi(fastify: FastifyInstance) {
     });
 
     if (!user) {
-      return __reply.code(404).send({ error: 'User not found' });
+      return _reply.code(404).send({ error: 'User not found' });
     }
 
     // Check if viewer is the profile owner
@@ -239,7 +239,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       if (!user) {
-        return __reply.code(404).send({ error: 'User not found' });
+        return _reply.code(404).send({ error: 'User not found' });
       }
 
       const isOwner = viewerId === userId;
@@ -257,10 +257,10 @@ export async function profileApi(fastify: FastifyInstance) {
             },
           });
           if (!follow) {
-            return __reply.code(403).send({ error: 'This user\'s activity is private' });
+            return _reply.code(403).send({ error: 'This user\'s activity is private' });
           }
         } else if (!user.isPublic) {
-          return __reply.code(403).send({ error: 'This user\'s activity is private' });
+          return _reply.code(403).send({ error: 'This user\'s activity is private' });
         }
       }
 
@@ -343,7 +343,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       if (!user) {
-        return __reply.code(404).send({ error: 'User not found' });
+        return _reply.code(404).send({ error: 'User not found' });
       }
 
       const isOwner = viewerId === userId;
@@ -361,10 +361,10 @@ export async function profileApi(fastify: FastifyInstance) {
             },
           });
           if (!follow) {
-            return __reply.code(403).send({ error: 'This user\'s watchlist is private' });
+            return _reply.code(403).send({ error: 'This user\'s watchlist is private' });
           }
         } else if (!user.isPublic) {
-          return __reply.code(403).send({ error: 'This user\'s watchlist is private' });
+          return _reply.code(403).send({ error: 'This user\'s watchlist is private' });
         }
       }
 
