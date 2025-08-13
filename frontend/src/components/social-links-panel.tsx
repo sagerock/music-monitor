@@ -22,7 +22,7 @@ const platformIcons = {
 const platformColors = {
   youtube: 'text-red-600',
   instagram: 'text-pink-600',
-  tiktok: 'text-black',
+  tiktok: 'text-gray-900 dark:text-gray-100',
   twitter: 'text-blue-400',
   facebook: 'text-blue-600',
 };

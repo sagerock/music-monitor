@@ -40,7 +40,7 @@ export function GenreSelector({ selectedGenres, onGenresChange }: GenreSelectorP
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       >
-        <span className="text-sm font-medium">
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
           {selectedGenres.length === 0
             ? 'All genres'
             : `${selectedGenres.length} genre${selectedGenres.length > 1 ? 's' : ''} selected`}
@@ -56,7 +56,7 @@ export function GenreSelector({ selectedGenres, onGenresChange }: GenreSelectorP
           />
           <div className="absolute top-full left-0 mt-2 w-80 max-h-96 overflow-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-20">
             <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 flex items-center justify-between">
-              <span className="text-sm font-semibold">Filter by Genre</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Filter by Genre</span>
               {selectedGenres.length > 0 && (
                 <button
                   onClick={clearGenres}
@@ -76,7 +76,7 @@ export function GenreSelector({ selectedGenres, onGenresChange }: GenreSelectorP
                     'w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors',
                     selectedGenres.includes(item.genre)
                       ? 'bg-spotify-green/10 text-spotify-green'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
                   )}
                 >
                   <span>{item.genre}</span>
