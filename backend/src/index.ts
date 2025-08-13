@@ -110,7 +110,7 @@ async function start() {
     await fastify.register(uploadApi, { prefix: '/api/upload' });
 
     // Health check endpoint
-    fastify.get('/health', async (request, reply) => {
+    fastify.get('/health', async (_request, _reply) => {
       return { status: 'healthy', timestamp: new Date().toISOString() };
     });
 

@@ -77,7 +77,7 @@ export class YouTubeService {
       return null;
     }
 
-    return this.queue.add(async () => {
+    const result = await this.queue.add(async () => {
       try {
         let channelId = this.extractChannelId(channelIdOrUrl);
         
@@ -143,8 +143,8 @@ export class YouTubeService {
           viewCount: parseInt(stats?.viewCount || '0'),
           videoCount: parseInt(stats?.videoCount || '0'),
           title: snippet?.title || '',
-          description: snippet?.description,
-          customUrl: snippet?.customUrl,
+          description: snippet?.description || undefined,
+          customUrl: snippet?.customUrl || undefined,
           thumbnailUrl: snippet?.thumbnails?.default?.url,
         };
       } catch (error) {
@@ -152,6 +152,8 @@ export class YouTubeService {
         return null;
       }
     });
+    
+    return result || null;
   }
 
   /**

@@ -226,7 +226,7 @@ export const searchRoutes: FastifyPluginAsync = async (fastify) => {
           }
         }
       } catch (trackError) {
-        fastify.log.warn('Failed to fetch top tracks:', trackError);
+        fastify.log.warn('Failed to fetch top tracks:', trackError as any);
       }
       
       return reply.send({

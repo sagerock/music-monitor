@@ -50,7 +50,7 @@ export class SimpleInstagramService {
       return null;
     }
 
-    return this.queue.add(async () => {
+    const result = await this.queue.add(async () => {
       const browser = await this.getBrowser();
       const page = await browser.newPage();
       
@@ -112,6 +112,8 @@ export class SimpleInstagramService {
         await page.close();
       }
     });
+    
+    return result || null;
   }
 
   private parseNumber(str: string): number {

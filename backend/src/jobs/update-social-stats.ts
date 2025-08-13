@@ -52,7 +52,7 @@ export async function updateSocialStats() {
           status: 'failed',
           completedAt: new Date(),
           message: 'Failed to update social stats',
-          errorDetails: error instanceof Error ? { message: error.message, stack: error.stack } : error,
+          errorDetails: error instanceof Error ? { message: error.message, stack: error.stack } : (error as any),
         },
       });
       

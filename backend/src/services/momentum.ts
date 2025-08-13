@@ -1,14 +1,6 @@
 import { prisma } from '../db/client';
 import { subDays } from 'date-fns';
 
-interface ArtistSnapshot {
-  artistId: string;
-  popularity: number | null;
-  followers: bigint | null;
-  tiktokMentions: number | null;
-  playlistCount: number | null;
-}
-
 interface MomentumData {
   artistId: string;
   name: string;

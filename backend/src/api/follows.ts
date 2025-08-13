@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-import { z } from 'zod';
 import { prisma } from '../db/client';
 
 export async function followsApi(fastify: FastifyInstance) {

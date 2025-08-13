@@ -37,6 +37,7 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       const token = fastify.jwt.sign({
+        userId: user.id,
         id: user.id,
         email: user.email,
       });
@@ -73,6 +74,7 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       const token = fastify.jwt.sign({
+        userId: user.id,
         id: user.id,
         email: user.email,
       });

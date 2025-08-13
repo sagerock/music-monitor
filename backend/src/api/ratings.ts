@@ -52,7 +52,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
       _count: { rating: true },
     });
 
-    const distributionMap = {
+    const distributionMap: Record<number, number> = {
       1: 0,
       2: 0,
       3: 0,

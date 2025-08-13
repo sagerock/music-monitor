@@ -84,7 +84,7 @@ export class InstagramService {
       return null;
     }
 
-    return this.queue.add(async () => {
+    const result = await this.queue.add(async () => {
       let page: Page | null = null;
       
       try {
@@ -123,6 +123,7 @@ export class InstagramService {
 
         // Extract data from the page
         const stats = await page.evaluate(() => {
+          declare const document: any; // Browser global
           const parseInstagramNumber = (str: string): number => {
             str = str.replace(/,/g, '');
             if (str.endsWith('K')) {
@@ -225,6 +226,8 @@ export class InstagramService {
         }
       }
     });
+    
+    return result || null;
   }
 
   /**

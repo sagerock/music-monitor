@@ -72,12 +72,11 @@ export async function refreshNewReleases() {
     const trackIds = newReleases.map(t => t.id).filter(Boolean);
     if (trackIds.length > 0) {
       // Audio features require user auth, skip for Client Credentials flow
-      const audioFeatures: any[] = [];
       
       for (const track of newReleases) {
         if (!track.id || !track.artists[0]) continue;
         
-        const features = null;
+        const features: any = null;
         
         try {
           await prisma.track.upsert({

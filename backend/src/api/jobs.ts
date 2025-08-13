@@ -31,7 +31,7 @@ export const jobRoutes: FastifyPluginAsync = async (fastify) => {
 
   fastify.post('/refresh-new-releases', {
     preHandler: authenticateJob,
-  }, async (request, reply) => {
+  }, async (_request, reply) => {
     try {
       const result = await refreshNewReleases();
       
@@ -50,7 +50,7 @@ export const jobRoutes: FastifyPluginAsync = async (fastify) => {
 
   fastify.post('/snapshot-artists', {
     preHandler: authenticateJob,
-  }, async (request, reply) => {
+  }, async (_request, reply) => {
     try {
       const result = await snapshotArtists();
       
@@ -69,7 +69,7 @@ export const jobRoutes: FastifyPluginAsync = async (fastify) => {
 
   fastify.post('/check-alerts', {
     preHandler: authenticateJob,
-  }, async (request, reply) => {
+  }, async (_request, reply) => {
     try {
       const result = await checkAlerts();
       
@@ -88,7 +88,7 @@ export const jobRoutes: FastifyPluginAsync = async (fastify) => {
 
   fastify.post('/update-social-stats', {
     preHandler: authenticateJob,
-  }, async (request, reply) => {
+  }, async (_request, reply) => {
     try {
       await updateSocialStats();
       
@@ -105,7 +105,7 @@ export const jobRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  fastify.get('/status', async (request, reply) => {
+  fastify.get('/status', async (_request, reply) => {
     try {
       const { prisma } = await import('../db/client');
       

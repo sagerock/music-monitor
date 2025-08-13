@@ -152,11 +152,10 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
 
       const topTracks = await spotifyClient.getArtistTopTracks(id);
       // Audio features require user auth, skip for Client Credentials flow
-      const audioFeatures: any[] = [];
 
       for (let i = 0; i < topTracks.length; i++) {
         const track = topTracks[i];
-        const features = null;
+        const features: any = null;
         
         await prisma.track.upsert({
           where: { id: track.id },
