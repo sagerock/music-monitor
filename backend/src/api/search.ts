@@ -150,7 +150,7 @@ export const searchRoutes: FastifyPluginAsync = async (fastify) => {
         date.setHours(12, 0, 0, 0); // Normalize to noon
         
         // Create realistic growth pattern - slightly lower values in the past
-        const dayProgress = (30 - daysAgo) / 30;
+        // const dayProgress = (30 - daysAgo) / 30; // unused
         
         // Add some variation
         const dailyVariation = 0.98 + Math.random() * 0.04;

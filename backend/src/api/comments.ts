@@ -14,7 +14,7 @@ const updateCommentSchema = z.object({
 
 export async function commentsApi(fastify: FastifyInstance) {
   // Get comments for an artist
-  fastify.get('/artist/:artistId', async (request, reply) => {
+  fastify.get('/artist/:artistId', async (request, _reply) => {
     const { artistId } = request.params as { artistId: string };
     const { page = '1', limit = '20' } = request.query as { page?: string; limit?: string };
 
@@ -68,7 +68,7 @@ export async function commentsApi(fastify: FastifyInstance) {
   fastify.post(
     '/',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const data = createCommentSchema.parse(request.body);
       const userId = request.user.userId || request.user.id;
 

@@ -12,7 +12,7 @@ const createRatingSchema = z.object({
 
 export async function ratingsApi(fastify: FastifyInstance) {
   // Get ratings for an artist
-  fastify.get('/artist/:artistId', async (request, reply) => {
+  fastify.get('/artist/:artistId', async (request, _reply) => {
     const { artistId } = request.params as { artistId: string };
     const { page = '1', limit = '20' } = request.query as { page?: string; limit?: string };
 
@@ -81,7 +81,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
   fastify.get(
     '/artist/:artistId/user',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { artistId } = request.params as { artistId: string };
       const userId = request.user.userId || request.user.id;
 
@@ -102,7 +102,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
   fastify.post(
     '/',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const data = createRatingSchema.parse(request.body);
       const userId = request.user.userId || request.user.id;
 
@@ -137,7 +137,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
   fastify.delete(
     '/artist/:artistId',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { artistId } = request.params as { artistId: string };
       const userId = request.user.userId || request.user.id;
 
@@ -168,7 +168,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
   );
 
   // Get top rated artists
-  fastify.get('/top-rated', async (request, reply) => {
+  fastify.get('/top-rated', async (request, _reply) => {
     const { limit = '10' } = request.query as { limit?: string };
     const limitNum = parseInt(limit, 10);
 

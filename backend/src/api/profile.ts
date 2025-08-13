@@ -23,7 +23,7 @@ export async function profileApi(fastify: FastifyInstance) {
   fastify.get(
     '/me',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const userId = request.user.userId || request.user.id;
 
       const user = await prisma.user.findUnique({
@@ -168,7 +168,7 @@ export async function profileApi(fastify: FastifyInstance) {
   fastify.put(
     '/me',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const userId = request.user.userId || request.user.id;
       const data = updateProfileSchema.parse(request.body);
 
@@ -212,7 +212,7 @@ export async function profileApi(fastify: FastifyInstance) {
   // Get user's recent activity (comments and ratings) - respects privacy
   fastify.get(
     '/activity/:userId',
-    async (request, reply) => {
+    async (request, _reply) => {
       const { userId } = request.params as { userId: string };
       const { page = '1', limit = '20' } = request.query as { page?: string; limit?: string };
 
@@ -321,7 +321,7 @@ export async function profileApi(fastify: FastifyInstance) {
   // Get user's watchlist - respects privacy
   fastify.get(
     '/watchlist/:userId',
-    async (request, reply) => {
+    async (request, _reply) => {
       const { userId } = request.params as { userId: string };
 
       // Get viewer ID if authenticated

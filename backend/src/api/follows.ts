@@ -6,7 +6,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.post(
     '/follow/:userId',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { userId: targetId } = request.params as { userId: string };
       const followerId = request.user.userId || request.user.id;
 
@@ -116,7 +116,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.delete(
     '/unfollow/:userId',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { userId: targetId } = request.params as { userId: string };
       const followerId = request.user.userId || request.user.id;
 
@@ -142,7 +142,7 @@ export async function followsApi(fastify: FastifyInstance) {
   );
 
   // Get user's followers
-  fastify.get('/followers/:userId', async (request, reply) => {
+  fastify.get('/followers/:userId', async (request, _reply) => {
     const { userId } = request.params as { userId: string };
     const { page = '1', limit = '20' } = request.query as { page?: string; limit?: string };
     
@@ -183,7 +183,7 @@ export async function followsApi(fastify: FastifyInstance) {
   });
 
   // Get user's following
-  fastify.get('/following/:userId', async (request, reply) => {
+  fastify.get('/following/:userId', async (request, _reply) => {
     const { userId } = request.params as { userId: string };
     const { page = '1', limit = '20' } = request.query as { page?: string; limit?: string };
     
@@ -227,7 +227,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.get(
     '/status/:userId',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { userId: targetId } = request.params as { userId: string };
       const followerId = request.user.userId || request.user.id;
 
@@ -267,7 +267,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.get(
     '/requests',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const userId = request.user.userId || request.user.id;
       const { page = '1', limit = '20' } = request.query as { page?: string; limit?: string };
       
@@ -320,7 +320,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.post(
     '/requests/:requestId/approve',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { requestId } = request.params as { requestId: string };
       const userId = request.user.userId || request.user.id;
 
@@ -373,7 +373,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.post(
     '/requests/:requestId/reject',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { requestId } = request.params as { requestId: string };
       const userId = request.user.userId || request.user.id;
 
@@ -407,7 +407,7 @@ export async function followsApi(fastify: FastifyInstance) {
   fastify.delete(
     '/requests/:userId',
     { preValidation: [fastify.authenticate] },
-    async (request, reply) => {
+    async (request, _reply) => {
       const { userId: targetId } = request.params as { userId: string };
       const requesterId = request.user.userId || request.user.id;
 
@@ -433,7 +433,7 @@ export async function followsApi(fastify: FastifyInstance) {
   );
 
   // Get follow counts for a user
-  fastify.get('/counts/:userId', async (request, reply) => {
+  fastify.get('/counts/:userId', async (request, _reply) => {
     const { userId } = request.params as { userId: string };
 
     const [followersCount, followingCount] = await Promise.all([

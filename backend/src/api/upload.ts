@@ -47,7 +47,7 @@ export async function uploadApi(fastify: FastifyInstance) {
         const filePath = `avatars/${fileName}`;
 
         // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+        const { data: _uploadData, error: uploadError } = await supabaseAdmin.storage
           .from('user-uploads')
           .upload(filePath, buffer, {
             contentType: data.mimetype,
