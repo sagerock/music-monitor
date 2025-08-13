@@ -4,9 +4,9 @@ services:
     name: music-monitor-api
     runtime: node
     repo: https://github.com/sagerock/music-monitor
-    buildCommand: cd backend && pnpm install && pnpm build && pnpm db:generate
-    startCommand: cd backend && pnpm start
-    rootDir: .
+    buildCommand: pnpm install && pnpm build && pnpm db:generate
+    startCommand: pnpm start
+    rootDir: backend
     envVars:
       - key: NODE_ENV
         value: production
