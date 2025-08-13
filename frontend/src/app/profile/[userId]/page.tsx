@@ -39,9 +39,9 @@ export default function PublicProfilePage({ params }: ProfilePageProps) {
   }
 
   const profile = profileData?.data;
-  const isOwnProfile = user?.id === params.userId;
-  const isFollowing = profileData?.isFollowing;
-  const isLimited = profileData?.isLimited;
+  const isOwnProfile = !!(user && user.id === params.userId);
+  const isFollowing = profileData?.isFollowing || false;
+  const isLimited = profileData?.isLimited || false;
 
   if (error || !profile) {
     return (
