@@ -14,12 +14,25 @@ Hey Indy! This guide is specifically for you to get started with our Music Monit
 ### ☑️ Step 1: Accept GitHub Invitation
 Check your email for the GitHub repository invitation from Dad. Click accept!
 
-### ☑️ Step 2: Open GitHub Codespaces
+### ☑️ Step 2: Choose Your Coding Environment
+
+**Option A: Claude Code or Cursor (Recommended)**
+1. Download [Claude Code](https://claude.ai/download) or [Cursor](https://cursor.sh)
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/sagerock/music-monitor.git
+   ```
+3. Open the folder in your AI editor
+4. Run `pnpm install` then `pnpm dev`
+
+**Option B: GitHub Codespaces (Quick Start)**
 1. Go to: https://github.com/sagerock/music-monitor
 2. Click the green "Code" button
 3. Select "Codespaces" tab
 4. Click "Create codespace on main"
 5. Wait 2-3 minutes for setup (grab coffee ☕)
+
+See [AI_CODING_SETUP.md](./AI_CODING_SETUP.md) for detailed setup instructions!
 
 ### ☑️ Step 3: Explore the Codebase
 Once Codespaces opens, explore these files:
