@@ -57,8 +57,8 @@ export default function SearchPage() {
     },
     onSuccess: (data) => {
       toast.success(data.message || 'Artist added successfully!');
-      queryClient.invalidateQueries(['search']);
-      queryClient.invalidateQueries(['watchlist']);
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['watchlist'] });
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.error || 'Failed to add artist');

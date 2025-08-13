@@ -49,7 +49,7 @@ export function WatchlistButton({ artistId }: WatchlistButtonProps) {
     mutationFn: () => watchlistApi.addToWatchlist(artistId),
     onSuccess: () => {
       setIsInWatchlist(true);
-      queryClient.invalidateQueries(['watchlist']);
+      queryClient.invalidateQueries({ queryKey: ['watchlist'] });
       toast.success('Added to watchlist');
     },
     onError: () => {
@@ -61,7 +61,7 @@ export function WatchlistButton({ artistId }: WatchlistButtonProps) {
     mutationFn: () => watchlistApi.removeFromWatchlist(artistId),
     onSuccess: () => {
       setIsInWatchlist(false);
-      queryClient.invalidateQueries(['watchlist']);
+      queryClient.invalidateQueries({ queryKey: ['watchlist'] });
       toast.success('Removed from watchlist');
     },
     onError: () => {

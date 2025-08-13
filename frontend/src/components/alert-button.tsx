@@ -50,7 +50,7 @@ export function AlertButton({ artistId }: AlertButtonProps) {
   const createMutation = useMutation({
     mutationFn: () => alertsApi.createAlert(artistId, threshold),
     onSuccess: () => {
-      queryClient.invalidateQueries(['alerts']);
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
       toast.success('Alert created successfully');
       setShowModal(false);
     },
@@ -62,7 +62,7 @@ export function AlertButton({ artistId }: AlertButtonProps) {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => alertsApi.deleteAlert(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['alerts']);
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
       toast.success('Alert removed');
       setActiveAlert(null);
     },

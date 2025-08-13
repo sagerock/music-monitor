@@ -38,7 +38,7 @@ export default function AlertsPage() {
     mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
       alertsApi.updateAlert(id, { isActive }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['alerts']);
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
       toast.success('Alert updated');
     },
     onError: () => {
@@ -49,7 +49,7 @@ export default function AlertsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => alertsApi.deleteAlert(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['alerts']);
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
       toast.success('Alert deleted');
     },
     onError: () => {
