@@ -1,0 +1,18 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".next",
+  "devCommand": "pnpm dev",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@music-monitor-api-url",
+    "NEXT_PUBLIC_SUPABASE_URL": "@music-monitor-supabase-url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@music-monitor-supabase-anon-key"
+  },
+  "functions": {
+    "app/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}

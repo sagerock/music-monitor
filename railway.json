@@ -1,0 +1,8 @@
+{
+  "deploy": {
+    "backend": {
+      "dockerfile": "backend/Dockerfile",
+      "buildContext": "backend"
+    }
+  }
+}

@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id            String      @id
+  name          String
+  genres        String[]    @default([])
+  popularity    Int?
+  followers     BigInt?
+  country       String?
+  isMajorLabel  Boolean?    @map("is_major_label")
+  imageUrl      String?     @map("image_url")
+  spotifyUrl    String?     @map("spotify_url")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  tracks        Track[]
+  snapshots     Snapshot[]
+  watchlists    Watchlist[]
+  alerts        Alert[]
+  socialLinks   ArtistSocial[]
+  comments      Comment[]
+  ratings       Rating[]
+  
+  @@map("artists")
+}
+
+model Track {
+  id            String      @id
+  artistId      String      @map("artist_id")
+  name          String
+  albumId       String?     @map("album_id")
+  albumName     String?     @map("album_name")
+  releaseDate   DateTime?   @map("release_date")
+  tempo         Float?
+  energy        Float?
+  danceability  Float?
+  valence       Float?
+  loudness      Float?
+  acousticness  Float?
+  instrumentalness Float?
+  speechiness   Float?
+  duration      Int?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  
+  artist        Artist      @relation(fields: [artistId], references: [id])
+  
+  @@map("tracks")
+}
+
+model Snapshot {
+  id            BigInt      @id @default(autoincrement())
+  artistId      String      @map("artist_id")
+  snapshotDate  DateTime    @map("snapshot_date")
+  popularity    Int?
+  followers     BigInt?
+  tiktokMentions Int?       @map("tiktok_mentions")
+  playlistCount Int?        @map("playlist_count")
+  
+  artist        Artist      @relation(fields: [artistId], references: [id])
+  
+  @@unique([artistId, snapshotDate])
+  @@index([artistId, snapshotDate])
+  @@map("snapshots")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  name          String?
+  bio           String?     @db.Text
+  avatarUrl     String?     @map("avatar_url")
+  clerkId       String?     @unique @map("clerk_id")
+  
+  // Social media handles
+  twitter       String?
+  instagram     String?
+  tiktok        String?
+  youtube       String?
+  website       String?
+  
+  // Privacy settings
+  isPublic      Boolean     @default(true) @map("is_public")
+  showActivity  Boolean     @default(true) @map("show_activity")
+  showWatchlist Boolean     @default(true) @map("show_watchlist")
+  allowFollowers Boolean    @default(true) @map("allow_followers")
+  
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  watchlists    Watchlist[]
+  alerts        Alert[]
+  socialLinks   ArtistSocial[]
+  comments      Comment[]
+  ratings       Rating[]
+  
+  // Follow relations
+  followers     Follow[]    @relation("UserFollowers")
+  following     Follow[]    @relation("UserFollowing")
+  sentRequests  FollowRequest[] @relation("SentRequests")
+  receivedRequests FollowRequest[] @relation("ReceivedRequests")
+  notifications Notification[]
+  
+  @@map("users")
+}
+
+model Watchlist {
+  userId        String      @map("user_id")
+  artistId      String      @map("artist_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  
+  user          User        @relation(fields: [userId], references: [id])
+  artist        Artist      @relation(fields: [artistId], references: [id])
+  
+  @@id([userId, artistId])
+  @@map("watchlists")
+}
+
+model Alert {
+  id            BigInt      @id @default(autoincrement())
+  userId        String      @map("user_id")
+  artistId      String      @map("artist_id")
+  threshold     Float
+  isActive      Boolean     @default(true) @map("is_active")
+  lastTriggered DateTime?   @map("last_triggered")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  user          User        @relation(fields: [userId], references: [id])
+  artist        Artist      @relation(fields: [artistId], references: [id])
+  
+  @@index([userId, isActive])
+  @@map("alerts")
+}
+
+model TiktokData {
+  id            BigInt      @id @default(autoincrement())
+  artistName    String      @map("artist_name")
+  trackName     String?     @map("track_name")
+  mentions      Int
+  views         BigInt?
+  dataDate      DateTime    @map("data_date")
+  source        String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  
+  @@index([artistName, dataDate])
+  @@map("tiktok_data")
+}
+
+model JobLog {
+  id            BigInt      @id @default(autoincrement())
+  jobName       String      @map("job_name")
+  status        String
+  message       String?
+  startedAt     DateTime    @map("started_at")
+  completedAt   DateTime?   @map("completed_at")
+  errorDetails  Json?       @map("error_details")
+  
+  @@index([jobName, startedAt])
+  @@map("job_logs")
+}
+
+model ArtistSocial {
+  id            BigInt      @id @default(autoincrement())
+  artistId      String      @map("artist_id")
+  platform      String      // 'youtube', 'instagram', 'tiktok', 'twitter', 'facebook'
+  handle        String?     // @username or channel name
+  url           String      // full URL to profile
+  channelId     String?     @map("channel_id") // platform-specific ID (YouTube channel ID, etc)
+  verified      Boolean     @default(false) // manually confirmed as correct
+  addedBy       String?     @map("added_by") // user ID who added it
+  addedAt       DateTime    @default(now()) @map("added_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  // Stats that we might fetch
+  followerCount BigInt?     @map("follower_count")
+  lastFetched   DateTime?   @map("last_fetched")
+  
+  artist        Artist      @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  user          User?       @relation(fields: [addedBy], references: [id])
+  snapshots     SocialSnapshot[]
+  
+  @@unique([artistId, platform])
+  @@index([artistId])
+  @@map("artist_socials")
+}
+
+model SocialSnapshot {
+  id              BigInt      @id @default(autoincrement())
+  artistSocialId  BigInt      @map("artist_social_id")
+  snapshotDate    DateTime    @map("snapshot_date")
+  
+  // Core metrics (all platforms)
+  followerCount   BigInt?     @map("follower_count")
+  followingCount  BigInt?     @map("following_count")
+  postCount       Int?        @map("post_count")
+  
+  // Platform-specific metrics stored as JSON
+  metrics         Json?       // { views: 1234567, likes: 50000, engagement: 0.035, etc. }
+  
+  createdAt       DateTime    @default(now()) @map("created_at")
+  
+  artistSocial    ArtistSocial @relation(fields: [artistSocialId], references: [id], onDelete: Cascade)
+  
+  @@index([artistSocialId, snapshotDate])
+  @@unique([artistSocialId, snapshotDate])
+  @@map("social_snapshots")
+}
+
+model Comment {
+  id            String      @id @default(cuid())
+  artistId      String      @map("artist_id")
+  userId        String      @map("user_id")
+  content       String      @db.Text
+  parentId      String?     @map("parent_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  artist        Artist      @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent        Comment?    @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]   @relation("CommentReplies")
+  
+  @@index([artistId, createdAt])
+  @@index([userId])
+  @@map("comments")
+}
+
+model Rating {
+  id            String      @id @default(cuid())
+  artistId      String      @map("artist_id")
+  userId        String      @map("user_id")
+  rating        Int         // 1-5 stars
+  review        String?     @db.Text
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  artist        Artist      @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([artistId, userId]) // One rating per user per artist
+  @@index([artistId])
+  @@index([userId])
+  @@map("ratings")
+}
+
+model Follow {
+  id            String      @id @default(cuid())
+  followerId    String      @map("follower_id")
+  followingId   String      @map("following_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  
+  follower      User        @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following     User        @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
+}
+
+model FollowRequest {
+  id            String      @id @default(cuid())
+  requesterId   String      @map("requester_id")
+  targetId      String      @map("target_id")
+  status        String      @default("pending") // pending, approved, rejected
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  requester     User        @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  target        User        @relation("ReceivedRequests", fields: [targetId], references: [id], onDelete: Cascade)
+  
+  @@unique([requesterId, targetId])
+  @@index([requesterId])
+  @@index([targetId])
+  @@index([status])
+  @@map("follow_requests")
+}
+
+model Notification {
+  id            String      @id @default(cuid())
+  userId        String      @map("user_id")
+  type          String      // follow, follow_request, follow_approved, comment, rating
+  title         String
+  message       String
+  data          Json?       // Additional data like followerId, artistId, etc.
+  read          Boolean     @default(false)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("notifications")
+}
