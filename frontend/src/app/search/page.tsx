@@ -79,7 +79,7 @@ export default function SearchPage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Add Artists</h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Add Artists</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Search for artists on Spotify and add them to your tracking list
           </p>
@@ -94,7 +94,7 @@ export default function SearchPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for an artist..."
-              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-spotify-green focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-spotify-green focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
             {isSearching && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-spotify-green" />
@@ -133,7 +133,7 @@ export default function SearchPage() {
 
                 {/* Artist Info */}
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-1">{artist.name}</h3>
+                  <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-100">{artist.name}</h3>
                   
                   {artist.genres.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
@@ -151,11 +151,11 @@ export default function SearchPage() {
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500 dark:text-gray-400">Popularity</span>
-                      <span className="font-medium">{artist.popularity}/100</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{artist.popularity}/100</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500 dark:text-gray-400">Followers</span>
-                      <span className="font-medium flex items-center gap-1">
+                      <span className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-1">
                         <Users className="w-3 h-3" />
                         {formatNumber(artist.followers)}
                       </span>
@@ -205,7 +205,7 @@ export default function SearchPage() {
         {searchQuery && !isSearching && searchResults?.data?.length === 0 && (
           <div className="text-center py-16">
             <Music className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">No artists found</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">No artists found</h2>
             <p className="text-gray-600 dark:text-gray-400">
               Try searching with a different name
             </p>
@@ -216,7 +216,7 @@ export default function SearchPage() {
         {!searchQuery && (
           <div className="text-center py-16">
             <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Search for artists</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Search for artists</h2>
             <p className="text-gray-600 dark:text-gray-400">
               Start typing to search for artists on Spotify
             </p>

@@ -39,7 +39,7 @@ export default function WatchlistPage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">My Watchlist</h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">My Watchlist</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Track your favorite artists and their momentum
           </p>
@@ -54,7 +54,7 @@ export default function WatchlistPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
               <LogIn className="w-8 h-8 text-gray-400" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Sign in to use watchlist</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Sign in to use watchlist</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Create an account to save and track your favorite artists
             </p>
@@ -87,7 +87,7 @@ export default function WatchlistPage() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">{item.artist.name}</h3>
+                      <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-100">{item.artist.name}</h3>
                       <div className="flex flex-wrap gap-1">
                         {item.artist.genres?.slice(0, 2).map((genre: string) => (
                           <span
@@ -105,11 +105,11 @@ export default function WatchlistPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Popularity</span>
-                      <span className="font-medium">{item.artist.popularity || 0}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{item.artist.popularity || 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Followers</span>
-                      <span className="font-medium">{formatNumber(item.artist.followers || 0)}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{formatNumber(item.artist.followers || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Momentum</span>
@@ -131,7 +131,7 @@ export default function WatchlistPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
               <Star className="w-8 h-8 text-gray-400" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Your watchlist is empty</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Your watchlist is empty</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Start adding artists from the leaderboard to track their momentum
             </p>
