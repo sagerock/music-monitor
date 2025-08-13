@@ -63,7 +63,7 @@ export default function AlertsPage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Momentum Alerts</h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Momentum Alerts</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Get notified when artists reach momentum thresholds
           </p>
@@ -78,7 +78,7 @@ export default function AlertsPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
               <LogIn className="w-8 h-8 text-gray-400" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Sign in to set alerts</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Sign in to set alerts</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Create an account to get notifications about rising artists
             </p>
@@ -183,7 +183,7 @@ export default function AlertsPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
               <Bell className="w-8 h-8 text-gray-400" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">No alerts set</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">No alerts set</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Set alerts on artist pages to get notified when they're trending
             </p>
