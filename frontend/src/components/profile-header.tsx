@@ -149,7 +149,7 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
                 href={`https://tiktok.com/@${profile.tiktok}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-black dark:hover:text-white transition-colors"
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
                 title="TikTok"
               >
                 <FaTiktok className="w-5 h-5" />

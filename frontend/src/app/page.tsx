@@ -24,7 +24,7 @@ export default function HomePage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Rising Artists Leaderboard</h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Rising Artists Leaderboard</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Discover fast-rising artists based on momentum scores • Filter by genre to refine results
           </p>
