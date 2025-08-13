@@ -173,10 +173,10 @@ export default function SearchPage() {
                     ) : (
                       <button
                         onClick={() => handleAddArtist(artist.id)}
-                        disabled={addArtistMutation.isLoading}
+                        disabled={addArtistMutation.isPending}
                         className="flex-1 px-4 py-2 bg-spotify-green text-white font-medium rounded-lg hover:bg-spotify-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
-                        {addArtistMutation.isLoading ? (
+                        {addArtistMutation.isPending ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <>

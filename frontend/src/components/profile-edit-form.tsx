@@ -69,7 +69,7 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
             }}
             onDeleteSuccess={() => {
               // Silently update form data - no other actions  
-              setFormData(prev => ({ ...prev, avatarUrl: null }));
+              setFormData(prev => ({ ...prev, avatarUrl: '' }));
             }}
             size="md"
           />

@@ -34,16 +34,14 @@ export function WatchlistButton({ artistId }: WatchlistButtonProps) {
     queryFn: watchlistApi.getWatchlist,
     enabled: !!user, // Only fetch if logged in
     retry: false,
-    onSuccess: (data) => {
-      if (data?.data) {
-        const inList = data.data.some((item: any) => item.artist.id === artistId);
-        setIsInWatchlist(inList);
-      }
-    },
-    onError: () => {
-      // User not logged in, that's okay
-    },
   });
+
+  useEffect(() => {
+    if (watchlistData?.data) {
+      const inList = watchlistData.data.some((item: any) => item.artist.id === artistId);
+      setIsInWatchlist(inList);
+    }
+  }, [watchlistData, artistId]);
 
   const addMutation = useMutation({
     mutationFn: () => watchlistApi.addToWatchlist(artistId),
@@ -81,7 +79,7 @@ export function WatchlistButton({ artistId }: WatchlistButtonProps) {
     }
   };
 
-  const isLoading = addMutation.isLoading || removeMutation.isLoading;
+  const isLoading = addMutation.isPending || removeMutation.isPending;
 
   return (
     <button

@@ -347,13 +347,7 @@ export interface Rating {
 export interface RatingStats {
   average: number;
   total: number;
-  distribution: {
-    1: number;
-    2: number;
-    3: number;
-    4: number;
-    5: number;
-  };
+  distribution: Record<number, number>;
 }
 
 export const ratingsApi = {
@@ -472,7 +466,11 @@ export const profileApi = {
   },
 
   getUserProfile: async (userId: string) => {
-    const { data } = await api.get<{ data: UserProfile }>(`/api/profile/user/${userId}`);
+    const { data } = await api.get<{ 
+      data: UserProfile;
+      isFollowing: boolean;
+      isOwner: boolean;
+    }>(`/api/profile/user/${userId}`);
     return data;
   },
 

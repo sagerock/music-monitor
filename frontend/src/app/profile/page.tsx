@@ -12,7 +12,7 @@ import { Loader2, Edit, Activity, Heart } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 
 export default function ProfilePage() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'activity' | 'watchlist' | 'edit'>('activity');
 
   const { data: profileData, isLoading, refetch, error } = useQuery({
@@ -71,11 +71,11 @@ export default function ProfilePage() {
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <p className="text-lg text-red-600 mb-4">
-            {error?.response?.status === 401 
+            {(error as any)?.response?.status === 401 
               ? 'Session expired. Please sign in again.' 
               : 'Failed to load profile'}
           </p>
-          {error?.response?.status === 401 && (
+          {(error as any)?.response?.status === 401 && (
             <a
               href="/login"
               className="inline-block px-6 py-3 bg-spotify-green text-white rounded-lg hover:bg-green-600 transition-colors"

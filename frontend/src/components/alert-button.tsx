@@ -36,16 +36,14 @@ export function AlertButton({ artistId }: AlertButtonProps) {
     queryFn: alertsApi.getAlerts,
     enabled: !!user, // Only fetch if logged in
     retry: false,
-    onSuccess: (data) => {
-      if (data?.data) {
-        const alert = data.data.find((a: any) => a.artistId === artistId && a.isActive);
-        setActiveAlert(alert);
-      }
-    },
-    onError: () => {
-      // User not logged in, that's okay
-    },
   });
+
+  useEffect(() => {
+    if (alertsData?.data) {
+      const alert = alertsData.data.find((a: any) => a.artistId === artistId && a.isActive);
+      setActiveAlert(alert);
+    }
+  }, [alertsData, artistId]);
 
   const createMutation = useMutation({
     mutationFn: () => alertsApi.createAlert(artistId, threshold),
@@ -81,7 +79,7 @@ export function AlertButton({ artistId }: AlertButtonProps) {
     }
   };
 
-  const isLoading = createMutation.isLoading || deleteMutation.isLoading;
+  const isLoading = createMutation.isPending || deleteMutation.isPending;
 
   const handleClick = () => {
     if (!user) {

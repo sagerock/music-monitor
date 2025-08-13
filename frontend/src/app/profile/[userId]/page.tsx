@@ -39,9 +39,9 @@ export default function PublicProfilePage({ params }: ProfilePageProps) {
   }
 
   const profile = profileData?.data;
-  const isOwnProfile = !!(user && user.id === params.userId);
+  const isOwnProfile = profileData?.isOwner || false;
   const isFollowing = profileData?.isFollowing || false;
-  const isLimited = profileData?.isLimited || false;
+  const isLimited = false; // Not provided by API, default to false
 
   if (error || !profile) {
     return (
@@ -49,7 +49,7 @@ export default function PublicProfilePage({ params }: ProfilePageProps) {
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <p className="text-lg text-red-600 mb-4">
-            {error?.response?.status === 404 
+            {(error as any)?.response?.status === 404 
               ? 'User not found' 
               : 'Failed to load profile'}
           </p>
