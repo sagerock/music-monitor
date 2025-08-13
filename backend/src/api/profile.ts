@@ -58,7 +58,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       if (!user) {
-        return reply.code(404).send({ error: 'User not found' });
+        return __reply.code(404).send({ error: 'User not found' });
       }
 
       return { data: user };
@@ -108,7 +108,7 @@ export async function profileApi(fastify: FastifyInstance) {
     });
 
     if (!user) {
-      return reply.code(404).send({ error: 'User not found' });
+      return __reply.code(404).send({ error: 'User not found' });
     }
 
     // Check if viewer is the profile owner
@@ -239,7 +239,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       if (!user) {
-        return reply.code(404).send({ error: 'User not found' });
+        return __reply.code(404).send({ error: 'User not found' });
       }
 
       const isOwner = viewerId === userId;
@@ -257,10 +257,10 @@ export async function profileApi(fastify: FastifyInstance) {
             },
           });
           if (!follow) {
-            return reply.code(403).send({ error: 'This user\'s activity is private' });
+            return __reply.code(403).send({ error: 'This user\'s activity is private' });
           }
         } else if (!user.isPublic) {
-          return reply.code(403).send({ error: 'This user\'s activity is private' });
+          return __reply.code(403).send({ error: 'This user\'s activity is private' });
         }
       }
 
@@ -343,7 +343,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       if (!user) {
-        return reply.code(404).send({ error: 'User not found' });
+        return __reply.code(404).send({ error: 'User not found' });
       }
 
       const isOwner = viewerId === userId;
@@ -361,10 +361,10 @@ export async function profileApi(fastify: FastifyInstance) {
             },
           });
           if (!follow) {
-            return reply.code(403).send({ error: 'This user\'s watchlist is private' });
+            return __reply.code(403).send({ error: 'This user\'s watchlist is private' });
           }
         } else if (!user.isPublic) {
-          return reply.code(403).send({ error: 'This user\'s watchlist is private' });
+          return __reply.code(403).send({ error: 'This user\'s watchlist is private' });
         }
       }
 

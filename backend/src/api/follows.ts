@@ -11,7 +11,7 @@ export async function followsApi(fastify: FastifyInstance) {
       const followerId = request.user.userId || request.user.id;
 
       if (followerId === targetId) {
-        return reply.code(400).send({ error: 'Cannot follow yourself' });
+        return _reply.code(400).send({ error: 'Cannot follow yourself' });
       }
 
       // Check if already following
@@ -25,7 +25,7 @@ export async function followsApi(fastify: FastifyInstance) {
       });
 
       if (existingFollow) {
-        return reply.code(400).send({ error: 'Already following this user' });
+        return _reply.code(400).send({ error: 'Already following this user' });
       }
 
       // Get target user's privacy settings
@@ -35,11 +35,11 @@ export async function followsApi(fastify: FastifyInstance) {
       });
 
       if (!targetUser) {
-        return reply.code(404).send({ error: 'User not found' });
+        return _reply.code(404).send({ error: 'User not found' });
       }
 
       if (!targetUser.allowFollowers) {
-        return reply.code(403).send({ error: 'This user does not allow followers' });
+        return _reply.code(403).send({ error: 'This user does not allow followers' });
       }
 
       // If user is public, create follow directly
@@ -77,7 +77,7 @@ export async function followsApi(fastify: FastifyInstance) {
 
       if (existingRequest) {
         if (existingRequest.status === 'pending') {
-          return reply.code(400).send({ error: 'Follow request already pending' });
+          return _reply.code(400).send({ error: 'Follow request already pending' });
         }
         if (existingRequest.status === 'rejected') {
           // Update the request to pending
@@ -130,7 +130,7 @@ export async function followsApi(fastify: FastifyInstance) {
       });
 
       if (!follow) {
-        return reply.code(404).send({ error: 'Not following this user' });
+        return _reply.code(404).send({ error: 'Not following this user' });
       }
 
       await prisma.follow.delete({
@@ -329,15 +329,15 @@ export async function followsApi(fastify: FastifyInstance) {
       });
 
       if (!followRequest) {
-        return reply.code(404).send({ error: 'Request not found' });
+        return _reply.code(404).send({ error: 'Request not found' });
       }
 
       if (followRequest.targetId !== userId) {
-        return reply.code(403).send({ error: 'Not authorized to approve this request' });
+        return _reply.code(403).send({ error: 'Not authorized to approve this request' });
       }
 
       if (followRequest.status !== 'pending') {
-        return reply.code(400).send({ error: 'Request is not pending' });
+        return _reply.code(400).send({ error: 'Request is not pending' });
       }
 
       // Update request status
@@ -382,15 +382,15 @@ export async function followsApi(fastify: FastifyInstance) {
       });
 
       if (!followRequest) {
-        return reply.code(404).send({ error: 'Request not found' });
+        return _reply.code(404).send({ error: 'Request not found' });
       }
 
       if (followRequest.targetId !== userId) {
-        return reply.code(403).send({ error: 'Not authorized to reject this request' });
+        return _reply.code(403).send({ error: 'Not authorized to reject this request' });
       }
 
       if (followRequest.status !== 'pending') {
-        return reply.code(400).send({ error: 'Request is not pending' });
+        return _reply.code(400).send({ error: 'Request is not pending' });
       }
 
       // Update request status
@@ -421,7 +421,7 @@ export async function followsApi(fastify: FastifyInstance) {
       });
 
       if (!cancelRequest || cancelRequest.status !== 'pending') {
-        return reply.code(404).send({ error: 'No pending request found' });
+        return _reply.code(404).send({ error: 'No pending request found' });
       }
 
       await prisma.followRequest.delete({

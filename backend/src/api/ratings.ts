@@ -151,7 +151,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
       });
 
       if (!existingRating) {
-        return reply.code(404).send({ error: 'Rating not found' });
+        return _reply.code(404).send({ error: 'Rating not found' });
       }
 
       await prisma.rating.delete({
