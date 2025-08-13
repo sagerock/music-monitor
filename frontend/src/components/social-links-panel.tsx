@@ -97,7 +97,7 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'secret': 'cronJobSecret123'
+          'secret': process.env.NEXT_PUBLIC_CRON_SECRET || 'cronJobSecret123'
         },
         body: JSON.stringify({})
       });
