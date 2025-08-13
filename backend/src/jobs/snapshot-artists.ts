@@ -34,7 +34,7 @@ export async function snapshotArtists() {
       take: 100,
     });
 
-    const artistIds = artists.map(a => a.id);
+    const artistIds = artists.map((a: any) => a.id);
     
     if (artistIds.length > 0) {
       const spotifyArtists = await spotifyClient.getArtists(artistIds);

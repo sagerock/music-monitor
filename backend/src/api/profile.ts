@@ -386,7 +386,7 @@ export async function profileApi(fastify: FastifyInstance) {
       });
 
       // Convert BigInt followers to number for JSON serialization
-      const artists = watchlist.map(w => ({
+      const artists = watchlist.map((w: any) => ({
         ...w.artist,
         followers: w.artist.followers ? Number(w.artist.followers) : null,
       }));

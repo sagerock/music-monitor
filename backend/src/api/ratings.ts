@@ -8,10 +8,7 @@ const createRatingSchema = z.object({
   review: z.string().max(5000).optional(),
 });
 
-const updateRatingSchema = z.object({
-  rating: z.number().min(1).max(5),
-  review: z.string().max(5000).optional(),
-});
+// updateRatingSchema removed - was unused
 
 export async function ratingsApi(fastify: FastifyInstance) {
   // Get ratings for an artist
@@ -60,7 +57,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
       5: 0,
     };
 
-    distribution.forEach(d => {
+    distribution.forEach((d: any) => {
       distributionMap[d.rating] = d._count.rating;
     });
 
@@ -195,7 +192,7 @@ export async function ratingsApi(fastify: FastifyInstance) {
     });
 
     // Get artist details
-    const artistIds = topRated.map(r => r.artistId);
+    const artistIds = topRated.map((r: any) => r.artistId);
     const artists = await prisma.artist.findMany({
       where: { id: { in: artistIds } },
       select: {
@@ -206,9 +203,9 @@ export async function ratingsApi(fastify: FastifyInstance) {
       },
     });
 
-    const artistMap = new Map(artists.map(a => [a.id, a]));
+    const artistMap = new Map(artists.map((a: any) => [a.id, a]));
 
-    const results = topRated.map(r => ({
+    const results = topRated.map((r: any) => ({
       artist: artistMap.get(r.artistId),
       averageRating: r._avg.rating,
       totalRatings: r._count.rating,

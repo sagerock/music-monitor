@@ -145,7 +145,7 @@ export class YouTubeService {
           title: snippet?.title || '',
           description: snippet?.description || undefined,
           customUrl: snippet?.customUrl || undefined,
-          thumbnailUrl: snippet?.thumbnails?.default?.url,
+          thumbnailUrl: snippet?.thumbnails?.default?.url || undefined,
         };
       } catch (error) {
         console.error('Error fetching YouTube channel stats:', error);

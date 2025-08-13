@@ -32,7 +32,7 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       // Convert BigInt fields to strings for JSON serialization
-      const serializedAlerts = alerts.map(alert => ({
+      const serializedAlerts = alerts.map((alert: any) => ({
         ...alert,
         id: alert.id.toString(),
         artist: {

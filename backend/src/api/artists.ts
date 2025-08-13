@@ -47,12 +47,12 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
       
       const audioProfile = artist.tracks.length > 0
         ? {
-            energy: artist.tracks.reduce((sum, t) => sum + (t.energy || 0), 0) / artist.tracks.length,
-            danceability: artist.tracks.reduce((sum, t) => sum + (t.danceability || 0), 0) / artist.tracks.length,
-            valence: artist.tracks.reduce((sum, t) => sum + (t.valence || 0), 0) / artist.tracks.length,
-            tempo: artist.tracks.reduce((sum, t) => sum + (t.tempo || 0), 0) / artist.tracks.length,
-            acousticness: artist.tracks.reduce((sum, t) => sum + (t.acousticness || 0), 0) / artist.tracks.length,
-            instrumentalness: artist.tracks.reduce((sum, t) => sum + (t.instrumentalness || 0), 0) / artist.tracks.length,
+            energy: artist.tracks.reduce((sum: number, t: any) => sum + (t.energy || 0), 0) / artist.tracks.length,
+            danceability: artist.tracks.reduce((sum: number, t: any) => sum + (t.danceability || 0), 0) / artist.tracks.length,
+            valence: artist.tracks.reduce((sum: number, t: any) => sum + (t.valence || 0), 0) / artist.tracks.length,
+            tempo: artist.tracks.reduce((sum: number, t: any) => sum + (t.tempo || 0), 0) / artist.tracks.length,
+            acousticness: artist.tracks.reduce((sum: number, t: any) => sum + (t.acousticness || 0), 0) / artist.tracks.length,
+            instrumentalness: artist.tracks.reduce((sum: number, t: any) => sum + (t.instrumentalness || 0), 0) / artist.tracks.length,
           }
         : null;
 
@@ -60,12 +60,12 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
       const serializedArtist = {
         ...artist,
         followers: artist.followers ? artist.followers.toString() : null,
-        snapshots: artist.snapshots.map(s => ({
+        snapshots: artist.snapshots.map((s: any) => ({
           ...s,
           id: s.id.toString(),
           followers: s.followers ? s.followers.toString() : null,
         })),
-        tracks: artist.tracks.map(t => ({
+        tracks: artist.tracks.map((t: any) => ({
           ...t,
           duration: t.duration ? t.duration.toString() : null,
         })),

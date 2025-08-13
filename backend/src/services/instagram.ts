@@ -123,7 +123,7 @@ export class InstagramService {
 
         // Extract data from the page
         const stats = await page.evaluate(() => {
-          declare const document: any; // Browser global
+          const document = (globalThis as any).document; // Browser global
           const parseInstagramNumber = (str: string): number => {
             str = str.replace(/,/g, '');
             if (str.endsWith('K')) {

@@ -27,7 +27,7 @@ export const searchRoutes: FastifyPluginAsync = async (fastify) => {
         select: { id: true },
       });
       
-      const existingIds = new Set(existingArtists.map(a => a.id));
+      const existingIds = new Set(existingArtists.map((a: any) => a.id));
       
       // Add tracking status to each artist
       const artistsWithStatus = artists.map((artist: any) => ({

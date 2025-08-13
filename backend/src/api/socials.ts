@@ -88,7 +88,7 @@ export const socialsRoutes: FastifyPluginAsync = async (fastify) => {
       });
       
       // Convert BigInt to string and calculate growth for JSON serialization
-      const serializedSocials = await Promise.all(socials.map(async (social) => {
+      const serializedSocials = await Promise.all(socials.map(async (social: any) => {
         let growthRate = null;
         
         // Calculate growth rate if we have 2 snapshots

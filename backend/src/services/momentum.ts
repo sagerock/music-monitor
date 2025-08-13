@@ -77,7 +77,7 @@ export class MomentumService {
       allDeltaFollowersPct.push(deltaFollowersPct);
       allDeltaTiktokPct.push(deltaTiktokPct);
 
-      const sparkline = artist.snapshots.map(s => s.popularity || 0);
+      const sparkline = artist.snapshots.map((s: any) => s.popularity || 0);
 
       momentumData.push({
         artistId: artist.id,
@@ -158,7 +158,7 @@ export class MomentumService {
       ? ((lastSnapshot.tiktokMentions || 0) - firstSnapshot.tiktokMentions) / firstSnapshot.tiktokMentions
       : 0;
 
-    const sparkline = artist.snapshots.map(s => s.popularity || 0);
+    const sparkline = artist.snapshots.map((s: any) => s.popularity || 0);
 
     const genreArtists = await this.calculateMomentum(artist.genres, days, 100);
     const genreDeltas = {

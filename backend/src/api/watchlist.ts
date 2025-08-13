@@ -31,7 +31,7 @@ export const watchlistRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      const watchlistWithMomentum = watchlist.map(item => {
+      const watchlistWithMomentum = watchlist.map((item: any) => {
         const [current, previous] = item.artist.snapshots;
         
         let momentumChange = 0;
@@ -49,7 +49,7 @@ export const watchlistRoutes: FastifyPluginAsync = async (fastify) => {
           artist: {
             ...item.artist,
             followers: item.artist.followers ? item.artist.followers.toString() : null,
-            snapshots: item.artist.snapshots.map(s => ({
+            snapshots: item.artist.snapshots.map((s: any) => ({
               ...s,
               id: s.id.toString(),
               followers: s.followers ? s.followers.toString() : null,

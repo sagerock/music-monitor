@@ -172,7 +172,7 @@ export async function followsApi(fastify: FastifyInstance) {
     ]);
 
     return {
-      data: followers.map(f => f.follower),
+      data: followers.map((f: any) => f.follower),
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -213,7 +213,7 @@ export async function followsApi(fastify: FastifyInstance) {
     ]);
 
     return {
-      data: following.map(f => f.following),
+      data: following.map((f: any) => f.following),
       pagination: {
         page: pageNum,
         limit: limitNum,
