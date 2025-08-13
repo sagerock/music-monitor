@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: music-monitor-api
+    env: node
+    buildCommand: pnpm install && pnpm build && pnpm db:generate
+    startCommand: pnpm start
