@@ -91,8 +91,9 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
     setError('');
     
     try {
-      // Use fetch directly to avoid axios interceptors
-      const response = await fetch('http://localhost:3001/api/jobs/update-social-stats', {
+      // Use the API URL from environment variable
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/jobs/update-social-stats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
