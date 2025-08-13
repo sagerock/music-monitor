@@ -27,7 +27,10 @@ export function Header() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
               <Music className="w-8 h-8 text-spotify-green" />
-              <span className="text-xl font-bold">Music Monitor</span>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold">Music Monitor</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Built by Sage & Indy 🎸</span>
+              </div>
             </Link>
             
             <nav className="hidden md:flex items-center gap-6">
