@@ -1,6 +1,9 @@
 import { prisma } from '../db/client';
 import { youtubeService } from '../services/youtube';
+import { instagramService } from '../services/instagram';
+import { tiktokService } from '../services/tiktok';
 import { simpleInstagramService } from '../services/instagram-simple';
+import { apifyService } from '../services/apify';
 
 export async function updateSocialStats() {
   const startTime = Date.now();
@@ -8,28 +11,38 @@ export async function updateSocialStats() {
   try {
     console.log('Starting social media stats update job...');
     
+    // Check which services are available
+    const useApify = apifyService.isEnabled();
+    console.log(`Using ${useApify ? 'Apify' : 'built-in'} scrapers`);
+    
     // Log job start
     const jobLog = await prisma.jobLog.create({
       data: {
         jobName: 'update-social-stats',
         status: 'running',
-        message: 'Updating social media statistics',
+        message: `Updating social media statistics (${useApify ? 'Apify' : 'built-in'})`,
         startedAt: new Date(),
       },
     });
 
     try {
-      // Update YouTube stats
+      // Update YouTube stats (uses Apify as fallback if available)
       await youtubeService.updateAllYouTubeStats();
       
-      // Update Instagram stats with simplified scraper
-      await simpleInstagramService.updateAllInstagramStats();
-      
-      // In the future, we can add other platforms here:
-      // await tiktokService.updateAllTikTokStats();
+      if (useApify) {
+        // Use Apify-powered scrapers
+        await instagramService.updateAllInstagramStats();
+        await tiktokService.updateAllTikTokStats();
+      } else {
+        // Fallback to simple Instagram scraper (limited functionality)
+        console.log('Apify not configured - Instagram scraping limited, TikTok disabled');
+        await simpleInstagramService.updateAllInstagramStats();
+      }
 
-      // Clean up browser instance
-      await simpleInstagramService.cleanup();
+      // Clean up if using simple scraper
+      if (!useApify) {
+        await simpleInstagramService.cleanup();
+      }
 
       const duration = Date.now() - startTime;
       

@@ -2,42 +2,46 @@ import { prisma } from '../db/client';
 import PQueue from 'p-queue';
 import { apifyService } from './apify';
 
-interface InstagramStats {
+interface TikTokStats {
   followers: number;
   following: number;
-  posts: number;
+  likes: number;
+  videos: number;
   isVerified?: boolean;
-  bio?: string;
-  profilePicUrl?: string;
+  nickname?: string;
+  avatarUrl?: string;
 }
 
-export class InstagramService {
+export class TikTokService {
   private queue: PQueue;
   private lastRequestTime: Map<string, number> = new Map();
 
   constructor() {
     // Rate limiting for API calls
-    // More lenient since Apify handles the actual scraping
     this.queue = new PQueue({
-      concurrency: 2, // Can handle more concurrent requests with Apify
+      concurrency: 2,
       interval: 5000, // 5 seconds between batches
       intervalCap: 2,
     });
   }
 
-
   /**
-   * Extract username from Instagram URL
+   * Extract username from TikTok URL
    */
   extractUsername(url: string): string | null {
     try {
       const urlObj = new URL(url);
       const pathname = urlObj.pathname;
       
-      // Remove trailing slash and get username
+      // TikTok URLs are typically /@username
+      if (pathname.startsWith('/@')) {
+        return pathname.substring(2).split('/')[0];
+      }
+      
+      // Sometimes just /username
       const parts = pathname.split('/').filter(Boolean);
-      if (parts.length > 0 && !parts[0].startsWith('p')) {
-        return parts[0];
+      if (parts.length > 0) {
+        return parts[0].replace('@', '');
       }
       return null;
     } catch {
@@ -47,9 +51,9 @@ export class InstagramService {
   }
 
   /**
-   * Scrape Instagram profile stats
+   * Scrape TikTok profile stats
    */
-  async scrapeProfile(usernameOrUrl: string): Promise<InstagramStats | null> {
+  async scrapeProfile(usernameOrUrl: string): Promise<TikTokStats | null> {
     const username = this.extractUsername(usernameOrUrl);
     if (!username) {
       console.error('Could not extract username from:', usernameOrUrl);
@@ -57,7 +61,7 @@ export class InstagramService {
     }
 
     // Check cache (don't scrape same profile within 24 hours)
-    const cacheKey = `instagram:${username}`;
+    const cacheKey = `tiktok:${username}`;
     const lastRequest = this.lastRequestTime.get(cacheKey);
     if (lastRequest && Date.now() - lastRequest < 24 * 60 * 60 * 1000) {
       console.log(`Skipping ${username} - scraped within last 24 hours`);
@@ -68,18 +72,18 @@ export class InstagramService {
       try {
         // Check if Apify is enabled
         if (!apifyService.isEnabled()) {
-          console.log('Apify service not available - Instagram scraping disabled');
+          console.log('Apify service not available - TikTok scraping disabled');
           console.log('To enable: Add APIFY_API_TOKEN to your environment variables');
           return null;
         }
 
-        console.log(`Scraping Instagram profile via Apify: @${username}`);
+        console.log(`Scraping TikTok profile via Apify: @${username}`);
         
         // Use Apify service to scrape
-        const profile = await apifyService.scrapeInstagram(username);
+        const profile = await apifyService.scrapeTikTok(username);
         
         if (!profile) {
-          console.error(`Failed to scrape Instagram profile: @${username}`);
+          console.error(`Failed to scrape TikTok profile: @${username}`);
           return null;
         }
 
@@ -87,20 +91,21 @@ export class InstagramService {
         this.lastRequestTime.set(cacheKey, Date.now());
 
         // Convert Apify response to our format
-        const stats: InstagramStats = {
+        const stats: TikTokStats = {
           followers: profile.followersCount,
           following: profile.followingCount,
-          posts: profile.postsCount,
+          likes: profile.likesCount,
+          videos: profile.videoCount,
           isVerified: profile.verified,
-          bio: profile.biography,
-          profilePicUrl: profile.profilePicUrl,
+          nickname: profile.nickname,
+          avatarUrl: profile.avatarUrl,
         };
 
         console.log(`✓ Scraped @${username}: ${stats.followers.toLocaleString()} followers`);
         return stats;
 
       } catch (error) {
-        console.error(`Error scraping Instagram @${username}:`, error);
+        console.error(`Error scraping TikTok @${username}:`, error);
         return null;
       }
     });
@@ -109,26 +114,26 @@ export class InstagramService {
   }
 
   /**
-   * Update all Instagram profiles in the database
+   * Update all TikTok profiles in the database
    */
-  async updateAllInstagramStats(): Promise<void> {
-    console.log('Starting Instagram stats update...');
+  async updateAllTikTokStats(): Promise<void> {
+    console.log('Starting TikTok stats update...');
     
-    const instagramSocials = await prisma.artistSocial.findMany({
+    const tiktokSocials = await prisma.artistSocial.findMany({
       where: {
-        platform: 'instagram',
+        platform: 'tiktok',
       },
       include: {
         artist: true,
       },
     });
 
-    console.log(`Found ${instagramSocials.length} Instagram profiles to update`);
+    console.log(`Found ${tiktokSocials.length} TikTok profiles to update`);
 
     let successCount = 0;
     let errorCount = 0;
 
-    for (const social of instagramSocials) {
+    for (const social of tiktokSocials) {
       try {
         // Check if we've updated recently (within last 23 hours)
         if (social.lastFetched) {
@@ -158,11 +163,12 @@ export class InstagramService {
               snapshotDate: new Date(),
               followerCount: BigInt(stats.followers),
               followingCount: BigInt(stats.following),
-              postCount: stats.posts,
+              postCount: stats.videos,
               metrics: {
-                bio: stats.bio,
+                likes: stats.likes,
                 isVerified: stats.isVerified,
-                profilePicUrl: stats.profilePicUrl,
+                nickname: stats.nickname,
+                avatarUrl: stats.avatarUrl,
               },
             },
           });
@@ -179,16 +185,8 @@ export class InstagramService {
       }
     }
 
-    console.log(`Instagram stats update complete: ${successCount} successful, ${errorCount} errors`);
-  }
-
-  /**
-   * Cleanup (no longer needed with Apify)
-   */
-  async cleanup(): Promise<void> {
-    // No cleanup needed - Apify handles everything
-    console.log('Instagram service cleanup (using Apify - no local browser)');
+    console.log(`TikTok stats update complete: ${successCount} successful, ${errorCount} errors`);
   }
 }
 
-export const instagramService = new InstagramService();
+export const tiktokService = new TikTokService();

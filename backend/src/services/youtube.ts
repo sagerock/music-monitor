@@ -2,6 +2,7 @@ import { google, youtube_v3 } from 'googleapis';
 import { config } from '../config';
 import { prisma } from '../db/client';
 import PQueue from 'p-queue';
+import { apifyService } from './apify';
 
 interface YouTubeChannelStats {
   subscriberCount: number;
@@ -16,6 +17,7 @@ interface YouTubeChannelStats {
 export class YouTubeService {
   private youtube: youtube_v3.Youtube;
   private queue: PQueue;
+  private useApifyFallback: boolean = false;
 
   constructor() {
     this.youtube = google.youtube({
@@ -31,6 +33,12 @@ export class YouTubeService {
       interval: 1000, // 1 second between requests
       intervalCap: 1,
     });
+
+    // Enable Apify fallback if both services are available
+    this.useApifyFallback = apifyService.isEnabled();
+    if (this.useApifyFallback) {
+      console.log('YouTube service: Apify fallback enabled');
+    }
   }
 
   /**
@@ -164,6 +172,28 @@ export class YouTubeService {
         };
       } catch (error) {
         console.error('Error fetching YouTube channel stats:', error);
+        
+        // Try Apify as fallback if available
+        if (this.useApifyFallback) {
+          console.log(`Attempting Apify fallback for YouTube channel: ${channelIdOrUrl}`);
+          try {
+            const channelData = await apifyService.scrapeYouTube(channelId || channelIdOrUrl);
+            if (channelData) {
+              return {
+                subscriberCount: channelData.subscriberCount,
+                viewCount: channelData.viewCount,
+                videoCount: channelData.videoCount,
+                title: channelData.title,
+                description: channelData.description,
+                customUrl: undefined,
+                thumbnailUrl: channelData.thumbnailUrl,
+              };
+            }
+          } catch (apifyError) {
+            console.error('Apify fallback also failed:', apifyError);
+          }
+        }
+        
         return null;
       }
     });
