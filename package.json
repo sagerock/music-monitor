@@ -5,17 +5,18 @@
   "description": "AI-Powered A&R Scouting Assistant",
   "scripts": {
     "dev": "pnpm --parallel dev",
-    "build": "pnpm --recursive build",
+    "build": "cd frontend && npm run build",
     "lint": "pnpm --recursive lint",
-    "test": "pnpm --recursive test"
+    "test": "pnpm --recursive test",
+    "vercel-build": "cd frontend && npm install && npm run build"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "next": "14.1.0"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0"
