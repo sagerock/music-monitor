@@ -31,6 +31,17 @@ interface TikTokProfile {
   avatarUrl?: string;
 }
 
+interface TwitterProfile {
+  username: string;
+  followersCount: number;
+  followingCount: number;
+  tweetsCount: number;
+  verified: boolean;
+  name?: string;
+  bio?: string;
+  avatarUrl?: string;
+}
+
 export class ApifyService {
   private client: ApifyClient | null = null;
   private enabled: boolean = false;
@@ -202,15 +213,74 @@ export class ApifyService {
     }
   }
 
+  async scrapeTwitter(username: string): Promise<TwitterProfile | null> {
+    if (!this.client) {
+      console.log('Apify client not initialized');
+      return null;
+    }
+
+    try {
+      console.log(`Scraping Twitter profile: @${username}`);
+      
+      // Using Apify Twitter Scraper
+      const run = await this.client.actor('apify/twitter-scraper').call({
+        searchMode: 'live',
+        profilesDesired: 1,
+        maxTweets: 1, // We only need profile data, not tweets
+        proxyConfig: { useApifyProxy: true },
+        searchTerms: [`from:${username}`],
+        includeUserInfo: true,
+      });
+
+      // Wait for the run to finish
+      await this.client.run(run.id).waitForFinish();
+
+      // Get the results
+      const { items } = await this.client.dataset(run.defaultDatasetId).listItems();
+      
+      if (items.length > 0) {
+        const tweet = items[0] as any;
+        // Twitter scraper returns user info with tweets
+        if (tweet.user) {
+          const user = tweet.user;
+          console.log('Twitter profile data received:', {
+            username: user.screen_name,
+            followers: user.followers_count,
+            verified: user.verified
+          });
+          
+          return {
+            username: user.screen_name || username,
+            followersCount: user.followers_count || 0,
+            followingCount: user.friends_count || 0,
+            tweetsCount: user.statuses_count || 0,
+            verified: user.verified || false,
+            name: user.name,
+            bio: user.description,
+            avatarUrl: user.profile_image_url_https,
+          };
+        }
+      }
+
+      console.log('No Twitter profile data found');
+      return null;
+    } catch (error) {
+      console.error('Error scraping Twitter:', error);
+      return null;
+    }
+  }
+
   // Helper method to scrape multiple platforms
   async scrapeAllPlatforms(handles: {
     instagram?: string;
     youtube?: string;
     tiktok?: string;
+    twitter?: string;
   }): Promise<{
     instagram?: InstagramProfile | null;
     youtube?: YouTubeChannel | null;
     tiktok?: TikTokProfile | null;
+    twitter?: TwitterProfile | null;
   }> {
     const results: any = {};
 
@@ -237,6 +307,14 @@ export class ApifyService {
       promises.push(
         this.scrapeTikTok(handles.tiktok).then(data => {
           results.tiktok = data;
+        })
+      );
+    }
+
+    if (handles.twitter) {
+      promises.push(
+        this.scrapeTwitter(handles.twitter).then(data => {
+          results.twitter = data;
         })
       );
     }
