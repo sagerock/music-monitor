@@ -4,6 +4,7 @@ import { prisma } from '../db/client';
 import { spotifyClient } from '../integrations/spotify';
 import { momentumService } from '../services/momentum';
 import { subDays } from 'date-fns';
+import { cache, getCacheKey } from '../utils/cache';
 
 const artistParamsSchema = z.object({
   id: z.string(),
@@ -17,6 +18,18 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/:id', async (request, reply) => {
     try {
       const { id } = artistParamsSchema.parse(request.params);
+      
+      // Cache key for artist details
+      const cacheKey = getCacheKey('artist-detail', { id });
+      
+      // Try to get from cache first
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        return reply.send({
+          success: true,
+          data: cachedData,
+        });
+      }
       
       const artist = await prisma.artist.findUnique({
         where: { id },
@@ -71,14 +84,19 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
         })),
       };
 
+      const responseData = {
+        ...serializedArtist,
+        momentum,
+        audioProfile,
+        lastSnapshots: serializedArtist.snapshots,
+      };
+
+      // Cache the result for 2 minutes (shorter than leaderboard since artist data changes more often)
+      cache.set(cacheKey, responseData, 2 * 60 * 1000);
+
       return reply.send({
         success: true,
-        data: {
-          ...serializedArtist,
-          momentum,
-          audioProfile,
-          lastSnapshots: serializedArtist.snapshots,
-        },
+        data: responseData,
       });
     } catch (error) {
       fastify.log.error(error);

@@ -19,6 +19,7 @@ import { followsApi } from './api/follows';
 import { uploadApi } from './api/upload';
 import { startCronJobs } from './jobs';
 import { authenticateSupabase } from './auth/supabase';
+import { setupMonitoring } from './middleware/monitoring';
 
 const fastify = Fastify({
   logger: config.NODE_ENV === 'production' 
@@ -83,6 +84,9 @@ async function start() {
       },
     });
 
+    // Setup monitoring and health checks
+    await setupMonitoring(fastify);
+
     fastify.decorate('authenticate', async function (request: any, reply: any) {
       // Check if it's a Supabase token
       const authHeader = request.headers.authorization;
@@ -115,11 +119,6 @@ async function start() {
     await fastify.register(profileApi, { prefix: '/api/profile' });
     await fastify.register(followsApi, { prefix: '/api/follows' });
     await fastify.register(uploadApi, { prefix: '/api/upload' });
-
-    // Health check endpoint
-    fastify.get('/health', async (_request, _reply) => {
-      return { status: 'healthy', timestamp: new Date().toISOString() };
-    });
 
     if (config.NODE_ENV === 'production') {
       startCronJobs();
