@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { alertsApi } from '@/lib/api';
 import { Header } from '@/components/header';
 import Link from 'next/link';
-import { Loader2, Bell, BellOff, LogIn, Trash2 } from 'lucide-react';
+import { Loader2, Bell, BellOff, LogIn, Trash2, TrendingUp, MessageCircle, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/auth-provider';
@@ -63,9 +63,9 @@ export default function AlertsPage() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Momentum Alerts</h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Your Alerts</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Get notified when artists reach momentum thresholds
+            Get notified about artist momentum, new comments, and ratings
           </p>
         </div>
 
@@ -123,16 +123,43 @@ export default function AlertsPage() {
                 {data.data.map((alert: any) => (
                   <tr key={alert.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Link
-                        href={`/artist/${alert.artistId}`}
-                        className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-spotify-green"
-                      >
-                        {alert.artist.name}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/artist/${alert.artistId}`}
+                          className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-spotify-green"
+                        >
+                          {alert.artist.name}
+                        </Link>
+                        <span className={cn(
+                          "inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full",
+                          alert.alertType === 'comment' 
+                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                            : alert.alertType === 'rating'
+                            ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                            : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                        )}>
+                          {alert.alertType === 'comment' ? (
+                            <>
+                              <MessageCircle className="w-3 h-3" />
+                              Comments
+                            </>
+                          ) : alert.alertType === 'rating' ? (
+                            <>
+                              <Star className="w-3 h-3" />
+                              Ratings
+                            </>
+                          ) : (
+                            <>
+                              <TrendingUp className="w-3 h-3" />
+                              Momentum
+                            </>
+                          )}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-600 dark:text-gray-300">
-                        {alert.threshold}
+                        {alert.threshold !== null ? alert.threshold : '-'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

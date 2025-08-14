@@ -45,7 +45,7 @@ LOG_LEVEL=info
 
 ### 7. Optional APIs
 ```
-YOUTUBE_API_KEY=AIzaSyAQZMVKaCQlbGEUtajAoSm1a4gzqlOOvu0
+YOUTUBE_API_KEY=your_youtube_api_key_here
 ```
 
 ## Current Issues
