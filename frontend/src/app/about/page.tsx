@@ -1,8 +1,21 @@
+'use client';
+
 import { Header } from '@/components/header';
 import Link from 'next/link';
-import { Music, TrendingUp, Users, Briefcase, GraduationCap, Heart, Globe, Zap } from 'lucide-react';
+import { Music, TrendingUp, Users, Briefcase, GraduationCap, Heart, Globe, Zap, Shield, Mail } from 'lucide-react';
+import { ALLOWED_DOMAINS } from '@/lib/allowed-domains';
+import { useState } from 'react';
 
 export default function AboutPage() {
+  const [showAllDomains, setShowAllDomains] = useState(false);
+  
+  // Get sample domains for display
+  const sampleLabels = ALLOWED_DOMAINS.recordLabels.slice(0, 5);
+  const sampleIndustry = ALLOWED_DOMAINS.musicIndustry.slice(0, 5);
+  const totalDomains = ALLOWED_DOMAINS.recordLabels.length + 
+                       ALLOWED_DOMAINS.musicIndustry.length + 
+                       ALLOWED_DOMAINS.invited.length;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
@@ -165,6 +178,97 @@ export default function AboutPage() {
             more diverse, and more exciting. By working together, we can ensure that no great artist goes 
             unnoticed and that the next generation of A&R professionals has the tools they need to succeed.
           </p>
+        </div>
+
+        {/* Exclusive Access Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Shield className="w-6 h-6 text-spotify-green" />
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Exclusive Industry Access</h2>
+          </div>
+          
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
+            Music Monitor maintains its quality and focus by limiting access to verified music industry 
+            professionals and students. This ensures meaningful connections and serious talent discovery.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Automatic Approval</h3>
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-spotify-green">✓</span>
+                  <span>All .edu email addresses</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-spotify-green">✓</span>
+                  <span>{totalDomains}+ pre-approved industry domains</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Request Access</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                Not on the list? Industry professionals can request access:
+              </p>
+              <a 
+                href="mailto:indy@sagerock.com?subject=Music Monitor Access Request&body=Please include:%0A- Your name%0A- Company/School%0A- Your role%0A- LinkedIn profile"
+                className="inline-flex items-center gap-2 text-spotify-green hover:underline text-sm font-medium"
+              >
+                <Mail className="w-4 h-4" />
+                indy@sagerock.com
+              </a>
+            </div>
+          </div>
+
+          {/* Domain Lists */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <button
+              onClick={() => setShowAllDomains(!showAllDomains)}
+              className="text-sm font-medium text-spotify-green hover:text-spotify-green/80 mb-4"
+            >
+              {showAllDomains ? 'Hide' : 'Show'} Approved Domains ({totalDomains}+)
+            </button>
+            
+            {showAllDomains ? (
+              <div className="grid md:grid-cols-2 gap-6 text-sm">
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Record Labels</h4>
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 max-h-48 overflow-y-auto">
+                    {ALLOWED_DOMAINS.recordLabels.map(domain => (
+                      <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
+                        {domain}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Music Industry</h4>
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 max-h-48 overflow-y-auto">
+                    {ALLOWED_DOMAINS.musicIndustry.map(domain => (
+                      <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
+                        {domain}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="mb-2">Examples of approved domains:</p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="font-medium">Labels:</span> {sampleLabels.join(', ')}...
+                  </div>
+                  <div>
+                    <span className="font-medium">Industry:</span> {sampleIndustry.join(', ')}...
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Call to Action */}

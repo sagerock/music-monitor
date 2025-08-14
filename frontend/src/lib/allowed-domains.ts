@@ -157,7 +157,7 @@ export function getAccessDeniedMessage(email: string): string {
     The email domain "${domain}" is not currently authorized.
     
     If you're a music industry professional or student, you can request access by emailing:
-    access@musicmonitor.app with proof of your industry or educational affiliation.
+    indy@sagerock.com with proof of your industry or educational affiliation.
   `;
 }
 

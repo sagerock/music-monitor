@@ -156,7 +156,7 @@ export default function LoginPage() {
                 <strong>Are you in the music industry or a student?</strong>
               </p>
               <p className="text-gray-400 text-sm">
-                Request access by emailing <a href="mailto:access@musicmonitor.app" className="text-spotify-green hover:underline">access@musicmonitor.app</a> with:
+                Request access by emailing <a href="mailto:indy@sagerock.com?subject=Music Monitor Access Request" className="text-spotify-green hover:underline">indy@sagerock.com</a> with:
               </p>
               <ul className="text-gray-400 text-sm mt-2 space-y-1">
                 <li>• Your name and role</li>
