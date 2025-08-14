@@ -201,9 +201,9 @@ This application is designed to be deployed using **Vercel** (frontend) and **Ra
    - Update Supabase auth redirect URLs
    - Test all functionality end-to-end
 
-**📚 Detailed Guide:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete step-by-step instructions
+**📚 Detailed Guide:** See [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for complete step-by-step instructions
 
-**✅ Checklist:** Use [DEPLOYMENT-CHECKLIST.md](./DEPLOYMENT-CHECKLIST.md) to ensure nothing is missed
+**✅ Checklist:** Use [DEPLOYMENT-CHECKLIST.md](./docs/DEPLOYMENT-CHECKLIST.md) to ensure nothing is missed
 
 **💰 Estimated Cost:** $5-30/month depending on usage
 

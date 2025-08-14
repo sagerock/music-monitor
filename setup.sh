@@ -28,7 +28,7 @@ if [ ! -f backend/.env ]; then
     echo "   - SPOTIFY_CLIENT_ID & SPOTIFY_CLIENT_SECRET"
     echo "   - SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY"
     echo ""
-    echo "   See ENV_SETUP.md for detailed instructions"
+    echo "   See docs/ENV_SETUP.md for detailed instructions"
     echo ""
 fi
 
@@ -59,7 +59,7 @@ echo "   Please configure your environment variables:"
 echo "   1. backend/.env"
 echo "   2. frontend/.env.local"
 echo ""
-echo "   See ENV_SETUP.md for detailed instructions"
+echo "   See docs/ENV_SETUP.md for detailed instructions"
 echo ""
 echo "To start the development servers, run:"
 echo "   pnpm dev"

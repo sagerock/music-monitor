@@ -35,8 +35,8 @@ assignees: ''
 ## 📚 Resources Checked
 <!-- Documentation/tutorials you've already looked at -->
 - [ ] README.md
-- [ ] CONTRIBUTING.md
-- [ ] LEARNING_PATH.md
+- [ ] docs/CONTRIBUTING.md
+- [ ] docs/LEARNING_PATH.md
 - [ ] Google/Stack Overflow
 - [ ] React/Next.js docs
 
