@@ -1,10 +1,5 @@
 {
   "buildCommand": "cd frontend && pnpm build",
   "outputDirectory": "frontend/.next",
-  "installCommand": "pnpm install",
-  "functions": {
-    "frontend/src/app/**": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "installCommand": "pnpm install"
 }
