@@ -3,6 +3,7 @@ import { youtubeService } from '../services/youtube';
 import { instagramService } from '../services/instagram';
 import { tiktokService } from '../services/tiktok';
 import { twitterService } from '../services/twitter';
+import { facebookService } from '../services/facebook';
 import { simpleInstagramService } from '../services/instagram-simple';
 import { apifyService } from '../services/apify';
 
@@ -34,10 +35,11 @@ export async function updateSocialStats() {
         // Use Apify-powered scrapers
         await instagramService.updateAllInstagramStats();
         await tiktokService.updateAllTikTokStats();
+        await facebookService.updateAllFacebookStats();
         await twitterService.updateAllTwitterStats();
       } else {
         // Fallback to simple Instagram scraper (limited functionality)
-        console.log('Apify not configured - Instagram scraping limited, TikTok/Twitter disabled');
+        console.log('Apify not configured - Instagram scraping limited, TikTok/Facebook/Twitter disabled');
         await simpleInstagramService.updateAllInstagramStats();
       }
 

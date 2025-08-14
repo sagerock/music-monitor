@@ -42,6 +42,17 @@ interface TwitterProfile {
   avatarUrl?: string;
 }
 
+interface FacebookProfile {
+  username: string;
+  followersCount: number;
+  likesCount: number;
+  verified: boolean;
+  name?: string;
+  about?: string;
+  profilePicUrl?: string;
+  category?: string;
+}
+
 export class ApifyService {
   private client: ApifyClient | null = null;
   private enabled: boolean = false;
@@ -213,6 +224,68 @@ export class ApifyService {
     }
   }
 
+  async scrapeFacebook(pageNameOrUrl: string): Promise<FacebookProfile | null> {
+    if (!this.client) {
+      console.log('Apify client not initialized');
+      return null;
+    }
+
+    try {
+      console.log(`Scraping Facebook page: ${pageNameOrUrl}`);
+      
+      // Handle both URLs and page names
+      const url = pageNameOrUrl.includes('facebook.com') 
+        ? pageNameOrUrl 
+        : `https://www.facebook.com/${pageNameOrUrl}`;
+
+      // Using the Facebook Pages Scraper actor
+      // Actor ID: apify/facebook-pages-scraper
+      const run = await this.client.actor('apify/facebook-pages-scraper').call({
+        startUrls: [{ url }],
+        resultsLimit: 1,
+        // Only get basic info to minimize compute units
+        scrapeAbout: true,
+        scrapeReviews: false,
+        scrapePosts: false,
+        scrapeServices: false,
+        language: 'en',
+      });
+
+      // Wait for the run to finish
+      await this.client.run(run.id).waitForFinish();
+
+      // Get the results
+      const { items } = await this.client.dataset(run.defaultDatasetId).listItems();
+      
+      if (items.length > 0) {
+        const page = items[0] as any;
+        console.log('Facebook page data received:', {
+          name: page.name,
+          likes: page.likes,
+          followers: page.followers,
+          verified: page.isVerified
+        });
+        
+        return {
+          username: page.pageUrl?.split('/').pop() || pageNameOrUrl,
+          followersCount: page.followers || 0,
+          likesCount: page.likes || 0,
+          verified: page.isVerified || false,
+          name: page.name,
+          about: page.about,
+          profilePicUrl: page.profilePicture,
+          category: page.categories?.[0],
+        };
+      }
+
+      console.log('No Facebook page data found');
+      return null;
+    } catch (error) {
+      console.error('Error scraping Facebook:', error);
+      return null;
+    }
+  }
+
   async scrapeTwitter(username: string): Promise<TwitterProfile | null> {
     if (!this.client) {
       console.log('Apify client not initialized');
@@ -223,7 +296,7 @@ export class ApifyService {
     // The apify/twitter-scraper may require specific configuration
     // For now, log that Twitter requires additional setup
     console.log(`Twitter scraping for @${username} - Note: Twitter scraper may require paid actor or specific configuration`);
-    console.log('Instagram, TikTok, and YouTube are fully functional');
+    console.log('Instagram, TikTok, YouTube, and Facebook are fully functional');
     
     // You can try alternative scrapers like:
     // - apidojo/tweet-scraper ($0.40 per 1000 tweets)
@@ -263,11 +336,13 @@ export class ApifyService {
     youtube?: string;
     tiktok?: string;
     twitter?: string;
+    facebook?: string;
   }): Promise<{
     instagram?: InstagramProfile | null;
     youtube?: YouTubeChannel | null;
     tiktok?: TikTokProfile | null;
     twitter?: TwitterProfile | null;
+    facebook?: FacebookProfile | null;
   }> {
     const results: any = {};
 
@@ -294,6 +369,14 @@ export class ApifyService {
       promises.push(
         this.scrapeTikTok(handles.tiktok).then(data => {
           results.tiktok = data;
+        })
+      );
+    }
+
+    if (handles.facebook) {
+      promises.push(
+        this.scrapeFacebook(handles.facebook).then(data => {
+          results.facebook = data;
         })
       );
     }

@@ -129,7 +129,8 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
 
   const hasYouTubeLinks = socials.some(s => s.platform === 'youtube');
   const hasInstagramLinks = socials.some(s => s.platform === 'instagram');
-  const hasScrapableLinks = hasYouTubeLinks || hasInstagramLinks;
+  const hasFacebookLinks = socials.some(s => s.platform === 'facebook');
+  const hasScrapableLinks = hasYouTubeLinks || hasInstagramLinks || hasFacebookLinks;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
@@ -141,7 +142,11 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
               onClick={handleUpdateStats}
               disabled={isUpdatingStats}
               className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-              title={`Update ${hasYouTubeLinks && hasInstagramLinks ? 'YouTube & Instagram' : hasYouTubeLinks ? 'YouTube' : 'Instagram'} stats`}
+              title={`Update ${[
+                hasYouTubeLinks && 'YouTube',
+                hasInstagramLinks && 'Instagram',
+                hasFacebookLinks && 'Facebook'
+              ].filter(Boolean).join(' & ')} stats`}
             >
               <RefreshCw className={`w-4 h-4 ${isUpdatingStats ? 'animate-spin' : ''}`} />
               {isUpdatingStats ? 'Updating...' : 'Update Stats'}
