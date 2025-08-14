@@ -156,12 +156,12 @@ export class ApifyService {
       console.log(`Scraping TikTok profile: ${username}`);
       
       // Using the TikTok Scraper actor
-      // Actor ID: apify/tiktok-scraper
-      const run = await this.client.actor('apify/tiktok-scraper').call({
+      // Actor ID: clockworks/free-tiktok-scraper (free tier friendly)
+      // Alternative: apify/tiktok-scraper (might require more credits)
+      const run = await this.client.actor('clockworks/free-tiktok-scraper').call({
         profiles: [`https://www.tiktok.com/@${username}`],
+        maxProfilesPerQuery: 1,
         resultsPerPage: 1,
-        shouldDownloadVideos: false,
-        shouldDownloadCovers: false,
       });
 
       // Wait for the run to finish
@@ -172,21 +172,54 @@ export class ApifyService {
       
       if (items.length > 0) {
         const profile = items[0] as any;
+        console.log('TikTok scraper response:', JSON.stringify(profile, null, 2));
+        
+        // Different scrapers use different field names
         return {
-          username: profile.uniqueId || username,
-          followersCount: profile.fans || 0,
-          followingCount: profile.following || 0,
-          likesCount: profile.heart || 0,
-          videoCount: profile.video || 0,
+          username: profile.uniqueId || profile.username || username,
+          followersCount: profile.fans || profile.followersCount || profile.followers || 0,
+          followingCount: profile.following || profile.followingCount || 0,
+          likesCount: profile.heart || profile.likesCount || profile.likes || 0,
+          videoCount: profile.video || profile.videoCount || profile.videos || 0,
           verified: profile.verified || false,
-          nickname: profile.nickname,
-          avatarUrl: profile.avatarMedium || profile.avatarThumb,
+          nickname: profile.nickname || profile.name,
+          avatarUrl: profile.avatarMedium || profile.avatarThumb || profile.avatar,
         };
       }
 
+      console.log('No TikTok profile data found in scraper response');
       return null;
     } catch (error) {
       console.error('Error scraping TikTok:', error);
+      // If the free scraper fails, try the official one
+      try {
+        console.log('Trying official TikTok scraper as fallback...');
+        const run = await this.client.actor('apify/tiktok-scraper').call({
+          profiles: [`https://www.tiktok.com/@${username}`],
+          resultsPerPage: 1,
+          shouldDownloadVideos: false,
+          shouldDownloadCovers: false,
+        });
+        
+        await this.client.run(run.id).waitForFinish();
+        const { items } = await this.client.dataset(run.defaultDatasetId).listItems();
+        
+        if (items.length > 0) {
+          const profile = items[0] as any;
+          return {
+            username: profile.uniqueId || username,
+            followersCount: profile.fans || 0,
+            followingCount: profile.following || 0,
+            likesCount: profile.heart || 0,
+            videoCount: profile.video || 0,
+            verified: profile.verified || false,
+            nickname: profile.nickname,
+            avatarUrl: profile.avatarMedium || profile.avatarThumb,
+          };
+        }
+      } catch (fallbackError) {
+        console.error('TikTok fallback scraper also failed:', fallbackError);
+      }
       return null;
     }
   }
