@@ -86,8 +86,10 @@ export class YouTubeService {
     }
 
     const result = await this.queue.add(async () => {
+      let channelId: string | null = null;
+      
       try {
-        let channelId = this.extractChannelId(channelIdOrUrl);
+        channelId = this.extractChannelId(channelIdOrUrl);
         
         // If we couldn't extract a channel ID, try to search for it
         if (!channelId && channelIdOrUrl.includes('youtube.com')) {

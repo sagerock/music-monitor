@@ -1,5 +1,4 @@
 import { ApifyClient } from 'apify-client';
-import { config } from '../config';
 
 interface InstagramProfile {
   username: string;
