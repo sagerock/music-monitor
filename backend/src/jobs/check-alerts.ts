@@ -19,8 +19,13 @@ export async function checkAlerts() {
       },
     });
 
+    // Only get momentum alerts
     const activeAlerts = await prisma.alert.findMany({
-      where: { isActive: true },
+      where: { 
+        isActive: true,
+        // Just check for momentum type - old alerts should be updated by now
+        alertType: 'momentum'
+      },
       include: {
         user: true,
         artist: true,
@@ -29,6 +34,11 @@ export async function checkAlerts() {
 
     for (const alert of activeAlerts) {
       try {
+        // Skip if no threshold (shouldn't happen for momentum alerts, but be safe)
+        if (alert.threshold === null) {
+          continue;
+        }
+        
         const momentum = await momentumService.getArtistMomentum(alert.artistId, 14);
         
         if (momentum && momentum.momentumScore >= alert.threshold) {
