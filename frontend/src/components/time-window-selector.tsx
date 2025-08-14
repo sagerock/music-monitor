@@ -9,7 +9,6 @@ interface TimeWindowSelectorProps {
 
 export function TimeWindowSelector({ value, onChange }: TimeWindowSelectorProps) {
   const options = [
-    { value: 1, label: '24h' },
     { value: 7, label: '7d' },
     { value: 14, label: '14d' },
     { value: 30, label: '30d' },

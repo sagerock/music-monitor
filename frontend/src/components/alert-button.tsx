@@ -62,7 +62,21 @@ export function AlertButton({ artistId }: AlertButtonProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
       toast.success(`${alertType.charAt(0).toUpperCase() + alertType.slice(1)} alert created successfully`);
-      setShowModal(false);
+      
+      // Switch to next available alert type or close modal
+      const momentumExists = activeAlerts.some(a => (a.alertType || 'momentum') === 'momentum') || alertType === 'momentum';
+      const commentExists = activeAlerts.some(a => a.alertType === 'comment') || alertType === 'comment';
+      const ratingExists = activeAlerts.some(a => a.alertType === 'rating') || alertType === 'rating';
+      
+      if (!momentumExists) {
+        setAlertType('momentum');
+      } else if (!commentExists) {
+        setAlertType('comment');
+      } else if (!ratingExists) {
+        setAlertType('rating');
+      } else {
+        setShowModal(false);
+      }
     },
     onError: (error: any) => {
       console.error('Alert creation error:', error);
@@ -107,6 +121,20 @@ export function AlertButton({ artistId }: AlertButtonProps) {
       toast.info('Please log in to set alerts');
       return;
     }
+    
+    // Set alert type to first available option
+    const momentumExists = activeAlerts.some(a => (a.alertType || 'momentum') === 'momentum');
+    const commentExists = activeAlerts.some(a => a.alertType === 'comment');
+    const ratingExists = activeAlerts.some(a => a.alertType === 'rating');
+    
+    if (!momentumExists) {
+      setAlertType('momentum');
+    } else if (!commentExists) {
+      setAlertType('comment');
+    } else if (!ratingExists) {
+      setAlertType('rating');
+    }
+    
     setShowModal(true);
   };
 
@@ -209,19 +237,14 @@ export function AlertButton({ artistId }: AlertButtonProps) {
                   value={alertType}
                   onChange={(e) => setAlertType(e.target.value as 'momentum' | 'comment' | 'rating')}
                   className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                  disabled={
-                    (alertType === 'momentum' && getMomentumAlert()) ||
-                    (alertType === 'comment' && getCommentAlert()) ||
-                    (alertType === 'rating' && getRatingAlert())
-                  }
                 >
-                  <option value="momentum" disabled={getMomentumAlert()}>
+                  <option value="momentum" disabled={!!getMomentumAlert()}>
                     Momentum Score {getMomentumAlert() ? '(Already active)' : ''}
                   </option>
-                  <option value="comment" disabled={getCommentAlert()}>
+                  <option value="comment" disabled={!!getCommentAlert()}>
                     New Comments {getCommentAlert() ? '(Already active)' : ''}
                   </option>
-                  <option value="rating" disabled={getRatingAlert()}>
+                  <option value="rating" disabled={!!getRatingAlert()}>
                     New Ratings {getRatingAlert() ? '(Already active)' : ''}
                   </option>
                 </select>
