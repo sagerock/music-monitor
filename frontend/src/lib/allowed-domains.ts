@@ -106,10 +106,7 @@ export const ALLOWED_DOMAINS = {
   ],
 
   // Specific invited organizations (add partners here)
-  invited: [
-    // Add specific company domains as partnerships are established
-    // 'example-partner.com',
-  ]
+  invited: [] as string[]
 };
 
 /**
