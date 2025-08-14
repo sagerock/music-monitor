@@ -152,48 +152,54 @@ export class ApifyService {
       return null;
     }
 
-    // TikTok scraping note: Most reliable scrapers are paid
-    // Free tier actors are often broken due to TikTok's anti-scraping
-    console.log(`TikTok scraping for @${username} - Note: Requires paid Apify actor`);
-    console.log('TikTok stats collection is currently disabled on free tier');
-    console.log('Instagram and YouTube scraping work on free tier');
-    
-    // Return null for now - TikTok requires paid actors
-    // Uncomment below when using a paid Apify plan
-    return null;
-    
-    /* 
-    // PAID ACTOR CODE (uncomment with paid Apify plan):
     try {
-      console.log(`Scraping TikTok profile: ${username}`);
+      console.log(`Scraping TikTok profile: @${username}`);
       
-      const run = await this.client.actor('apify/tiktok-scraper').call({
+      // Using Clockworks TikTok Scraper - maintained by Apify and free to use!
+      const run = await this.client.actor('clockworks/tiktok-scraper').call({
         profiles: [`https://www.tiktok.com/@${username}`],
         resultsPerPage: 1,
+        shouldDownloadVideos: false,
+        shouldDownloadCovers: false,
+        shouldDownloadSlideshowImages: false,
+        shouldDownloadSubtitles: false,
       });
 
+      // Wait for the run to finish
       await this.client.run(run.id).waitForFinish();
+
+      // Get the results
       const { items } = await this.client.dataset(run.defaultDatasetId).listItems();
       
       if (items.length > 0) {
         const profile = items[0] as any;
-        return {
-          username: profile.uniqueId || username,
-          followersCount: profile.fans || 0,
-          followingCount: profile.following || 0,
-          likesCount: profile.heart || 0,
-          videoCount: profile.video || 0,
-          verified: profile.verified || false,
-          nickname: profile.nickname,
-          avatarUrl: profile.avatarMedium || profile.avatarThumb,
-        };
+        console.log('TikTok profile data received:', {
+          username: profile.authorMeta?.name,
+          followers: profile.authorMeta?.fans,
+          verified: profile.authorMeta?.verified
+        });
+        
+        // Clockworks scraper returns data in authorMeta format
+        if (profile.authorMeta) {
+          return {
+            username: profile.authorMeta.name || username,
+            followersCount: profile.authorMeta.fans || 0,
+            followingCount: profile.authorMeta.following || 0,
+            likesCount: profile.authorMeta.heart || 0,
+            videoCount: profile.authorMeta.video || 0,
+            verified: profile.authorMeta.verified || false,
+            nickname: profile.authorMeta.nickName || profile.authorMeta.name,
+            avatarUrl: profile.authorMeta.avatar,
+          };
+        }
       }
+
+      console.log('No TikTok profile data found');
       return null;
     } catch (error) {
       console.error('Error scraping TikTok:', error);
       return null;
     }
-    */
   }
 
   // Helper method to scrape multiple platforms
