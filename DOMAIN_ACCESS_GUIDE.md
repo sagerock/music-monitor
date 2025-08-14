@@ -10,7 +10,7 @@ Music Monitor uses email domain validation to ensure only music industry profess
 Location: `/frontend/src/lib/allowed-domains.ts`
 
 This file contains all approved email domains organized into categories:
-- **Educational**: Any `.edu` domain (automatic approval)
+- **Educational**: Specific music schools only (Berklee, NYU, UCLA to start)
 - **Record Labels**: Major and indie labels
 - **Music Industry**: Streaming, media, agencies, etc.
 - **Invited**: Special partnerships (currently empty)
@@ -19,7 +19,7 @@ This file contains all approved email domains organized into categories:
 When someone tries to sign up:
 1. Their email domain is extracted (part after @)
 2. The system checks if it matches:
-   - The `.edu` pattern (for schools)
+   - Any domain in the educational list (specific schools)
    - Any domain in the record labels list
    - Any domain in the music industry list
    - Any domain in the invited list
@@ -38,6 +38,16 @@ When someone tries to sign up:
 1. Open `/frontend/src/lib/allowed-domains.ts`
 2. Find the appropriate category
 3. Add the domain in quotes with a comma
+
+Example - Adding a music school:
+```typescript
+educational: [
+  'berklee.edu',
+  'nyu.edu',
+  'ucla.edu',
+  'juilliard.edu',  // ← Add here
+]
+```
 
 Example - Adding a record label:
 ```typescript
@@ -80,15 +90,20 @@ Look in `/frontend/src/lib/allowed-domains.ts` - all domains are listed there
 
 ## Common Scenarios
 
-### Adding a University
-Universities with `.edu` are automatically approved. For international schools without .edu:
+### Adding a Music School
+Music schools need to be specifically added to the educational array:
 ```typescript
-musicIndustry: [
-  'berklee.edu',      // US school (auto-approved via .edu)
-  'icmp.ac.uk',       // UK school (manually added)
-  'aim.edu.au',       // Australian school (manually added)
+educational: [
+  'berklee.edu',      // Berklee College of Music
+  'nyu.edu',          // NYU (Steinhardt, Clive Davis)
+  'ucla.edu',         // UCLA Herb Alpert School
+  'juilliard.edu',    // The Juilliard School
+  'curtis.edu',       // Curtis Institute
+  'icmp.ac.uk',       // UK school (international)
 ]
 ```
+
+Note: Students from schools not on the list should email indy@sagerock.com with their school email to request addition.
 
 ### Adding a Label Group
 When adding a major label, include subsidiaries:
