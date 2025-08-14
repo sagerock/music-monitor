@@ -223,13 +223,11 @@ export class ApifyService {
       console.log(`Scraping Twitter profile: @${username}`);
       
       // Using Apify Twitter Scraper
+      // The scraper requires specific format for profile scraping
       const run = await this.client.actor('apify/twitter-scraper').call({
-        searchMode: 'live',
-        profilesDesired: 1,
-        maxTweets: 1, // We only need profile data, not tweets
+        startUrls: [`https://twitter.com/${username}`],
+        tweetsDesired: 1,
         proxyConfig: { useApifyProxy: true },
-        searchTerms: [`from:${username}`],
-        includeUserInfo: true,
       });
 
       // Wait for the run to finish
@@ -239,25 +237,38 @@ export class ApifyService {
       const { items } = await this.client.dataset(run.defaultDatasetId).listItems();
       
       if (items.length > 0) {
-        const tweet = items[0] as any;
-        // Twitter scraper returns user info with tweets
-        if (tweet.user) {
-          const user = tweet.user;
-          console.log('Twitter profile data received:', {
-            username: user.screen_name,
-            followers: user.followers_count,
-            verified: user.verified
+        const item = items[0] as any;
+        console.log('Twitter scraper raw response:', JSON.stringify(Object.keys(item)));
+        
+        // The Twitter scraper may return data in different formats
+        // Check for direct user data or nested in tweet
+        let userData = null;
+        
+        if (item.user) {
+          userData = item.user;
+        } else if (item.author) {
+          userData = item.author;
+        } else if (item.userName || item.name) {
+          // Direct profile format
+          userData = item;
+        }
+        
+        if (userData) {
+          console.log('Twitter profile data found:', {
+            username: userData.userName || userData.screen_name || userData.username,
+            followers: userData.followers || userData.followers_count || userData.followersCount,
+            verified: userData.isVerified || userData.verified || userData.isBlueVerified
           });
           
           return {
-            username: user.screen_name || username,
-            followersCount: user.followers_count || 0,
-            followingCount: user.friends_count || 0,
-            tweetsCount: user.statuses_count || 0,
-            verified: user.verified || false,
-            name: user.name,
-            bio: user.description,
-            avatarUrl: user.profile_image_url_https,
+            username: userData.userName || userData.screen_name || userData.username || username,
+            followersCount: userData.followers || userData.followers_count || userData.followersCount || 0,
+            followingCount: userData.following || userData.friends_count || userData.followingCount || 0,
+            tweetsCount: userData.statusesCount || userData.statuses_count || userData.tweetsCount || 0,
+            verified: userData.isVerified || userData.verified || userData.isBlueVerified || false,
+            name: userData.name || userData.displayName,
+            bio: userData.description || userData.bio,
+            avatarUrl: userData.profilePicture || userData.profile_image_url_https || userData.avatarUrl,
           };
         }
       }
