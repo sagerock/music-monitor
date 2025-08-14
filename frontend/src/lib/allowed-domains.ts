@@ -11,6 +11,9 @@ export const ALLOWED_DOMAINS = {
     'nyu.edu',           // NYU Steinhardt, Clive Davis Institute
     'ucla.edu',          // UCLA Herb Alpert School of Music
     'g.ucla.edu',        // UCLA Google Apps accounts
+    'juilliard.edu',    // The Juilliard School
+    'curtis.edu',       // Curtis Institute
+    'icmp.ac.uk',       // UK school (international)
     
     // Other top music programs (add more as requested)
     // Students from other schools can email indy@sagerock.com to get added
@@ -103,6 +106,7 @@ export const ALLOWED_DOMAINS = {
     'ascap.com',
     'bmi.com',
     'sesac.com',
+    'sagerock.com'
     
     // Music tech
     'soundcharts.com',
