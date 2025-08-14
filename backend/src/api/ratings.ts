@@ -20,27 +20,28 @@ export async function ratingsApi(fastify: FastifyInstance) {
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    const [ratings, total, stats] = await Promise.all([
-      prisma.rating.findMany({
-        where: { artistId },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
-          },
+    // Execute queries sequentially to avoid connection pool exhaustion
+    const ratings = await prisma.rating.findMany({
+      where: { artistId },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
         },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limitNum,
-      }),
-      prisma.rating.count({
-        where: { artistId },
-      }),
-      prisma.rating.aggregate({
-        where: { artistId },
-        _avg: { rating: true },
-        _count: { rating: true },
-      }),
-    ]);
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limitNum,
+    });
+
+    const total = await prisma.rating.count({
+      where: { artistId },
+    });
+
+    const stats = await prisma.rating.aggregate({
+      where: { artistId },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
 
     // Get rating distribution
     const distribution = await prisma.rating.groupBy({

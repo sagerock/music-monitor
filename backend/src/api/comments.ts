@@ -22,36 +22,36 @@ export async function commentsApi(fastify: FastifyInstance) {
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    const [comments, total] = await Promise.all([
-      prisma.comment.findMany({
-        where: { 
-          artistId,
-          parentId: null, // Only get top-level comments
+    // Execute queries sequentially to avoid connection pool exhaustion
+    const comments = await prisma.comment.findMany({
+      where: { 
+        artistId,
+        parentId: null, // Only get top-level comments
+      },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
         },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
-          },
-          replies: {
-            include: {
-              user: {
-                select: { id: true, name: true, email: true },
-              },
+        replies: {
+          include: {
+            user: {
+              select: { id: true, name: true, email: true },
             },
-            orderBy: { createdAt: 'asc' },
           },
+          orderBy: { createdAt: 'asc' },
         },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limitNum,
-      }),
-      prisma.comment.count({
-        where: { 
-          artistId,
-          parentId: null,
-        },
-      }),
-    ]);
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limitNum,
+    });
+
+    const total = await prisma.comment.count({
+      where: { 
+        artistId,
+        parentId: null,
+      },
+    });
 
     return {
       data: comments,
