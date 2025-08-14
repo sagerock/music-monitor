@@ -46,7 +46,7 @@ api.interceptors.response.use(
 export interface Artist {
   id: string;
   name: string;
-  slug: string | null;
+  slug?: string | null;
   genres: string[];
   popularity: number | null;
   followers: number | null;
@@ -89,7 +89,7 @@ export interface Snapshot {
 export interface MomentumData {
   artistId: string;
   name: string;
-  slug: string | null;
+  slug?: string | null;
   genres: string[];
   currentPopularity: number;
   currentFollowers: number;

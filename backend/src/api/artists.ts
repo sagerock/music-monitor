@@ -35,10 +35,12 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
       
-      // Try to find artist by slug first if it looks like a slug, otherwise by ID
-      const artist = await prisma.artist.findUnique({
-        where: isSlug ? { slug: id } : { id },
-        include: {
+      // Try to find artist - handle missing slug field gracefully
+      let artist;
+      try {
+        artist = await prisma.artist.findUnique({
+          where: isSlug ? { slug: id } : { id },
+          include: {
           tracks: {
             orderBy: { releaseDate: 'desc' },
             take: 10,
@@ -53,6 +55,26 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
           },
         },
       });
+      } catch (error) {
+        // If slug field doesn't exist, fallback to ID only
+        artist = await prisma.artist.findUnique({
+          where: { id },
+          include: {
+            tracks: {
+              orderBy: { releaseDate: 'desc' },
+              take: 10,
+            },
+            snapshots: {
+              where: {
+                snapshotDate: {
+                  gte: subDays(new Date(), 30),
+                },
+              },
+              orderBy: { snapshotDate: 'asc' },
+            },
+          },
+        });
+      }
 
       if (!artist) {
         return reply.status(404).send({

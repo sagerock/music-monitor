@@ -32,39 +32,53 @@ export async function refreshNewReleases() {
 
     for (const spotifyArtist of spotifyArtists) {
       try {
-        // Generate slug for new artists
-        const baseSlug = generateSlug(spotifyArtist.name);
-        const slug = await ensureUniqueSlug(
-          baseSlug,
-          async (testSlug) => {
-            const existing = await prisma.artist.findUnique({ where: { slug: testSlug } });
-            return existing !== null && existing.id !== spotifyArtist.id;
-          },
-          spotifyArtist.id
-        );
+        // Try to generate slug, but handle if field doesn't exist
+        let updateData: any = {
+          name: spotifyArtist.name,
+          genres: spotifyArtist.genres,
+          popularity: spotifyArtist.popularity,
+          followers: BigInt(spotifyArtist.followers.total),
+          imageUrl: spotifyArtist.images[0]?.url,
+          spotifyUrl: spotifyArtist.external_urls.spotify,
+          updatedAt: new Date(),
+        };
+
+        let createData: any = {
+          id: spotifyArtist.id,
+          name: spotifyArtist.name,
+          genres: spotifyArtist.genres,
+          popularity: spotifyArtist.popularity,
+          followers: BigInt(spotifyArtist.followers.total),
+          imageUrl: spotifyArtist.images[0]?.url,
+          spotifyUrl: spotifyArtist.external_urls.spotify,
+        };
+
+        // Try to add slug if possible
+        try {
+          const baseSlug = generateSlug(spotifyArtist.name);
+          const slug = await ensureUniqueSlug(
+            baseSlug,
+            async (testSlug) => {
+              try {
+                const existing = await prisma.artist.findUnique({ where: { slug: testSlug } });
+                return existing !== null && existing.id !== spotifyArtist.id;
+              } catch {
+                return false; // If slug field doesn't exist, assume no conflict
+              }
+            },
+            spotifyArtist.id
+          );
+          updateData.slug = slug;
+          createData.slug = slug;
+        } catch (error) {
+          // Slug field might not exist yet, continue without it
+          console.log('Slug generation skipped - field may not exist');
+        }
 
         await prisma.artist.upsert({
           where: { id: spotifyArtist.id },
-          update: {
-            name: spotifyArtist.name,
-            slug: slug, // Update slug if name changed
-            genres: spotifyArtist.genres,
-            popularity: spotifyArtist.popularity,
-            followers: BigInt(spotifyArtist.followers.total),
-            imageUrl: spotifyArtist.images[0]?.url,
-            spotifyUrl: spotifyArtist.external_urls.spotify,
-            updatedAt: new Date(),
-          },
-          create: {
-            id: spotifyArtist.id,
-            name: spotifyArtist.name,
-            slug: slug,
-            genres: spotifyArtist.genres,
-            popularity: spotifyArtist.popularity,
-            followers: BigInt(spotifyArtist.followers.total),
-            imageUrl: spotifyArtist.images[0]?.url,
-            spotifyUrl: spotifyArtist.external_urls.spotify,
-          },
+          update: updateData,
+          create: createData,
         });
 
         await prisma.snapshot.create({
