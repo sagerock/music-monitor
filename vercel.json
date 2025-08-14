@@ -2,11 +2,6 @@
   "buildCommand": "cd frontend && pnpm build",
   "outputDirectory": "frontend/.next",
   "installCommand": "pnpm install",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@music-monitor-api-url",
-    "NEXT_PUBLIC_SUPABASE_URL": "@music-monitor-supabase-url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@music-monitor-supabase-anon-key"
-  },
   "functions": {
     "frontend/src/app/**": {
       "runtime": "nodejs18.x"
