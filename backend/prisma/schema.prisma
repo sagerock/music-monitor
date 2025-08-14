@@ -129,7 +129,8 @@ model Alert {
   id            BigInt      @id @default(autoincrement())
   userId        String      @map("user_id")
   artistId      String      @map("artist_id")
-  threshold     Float
+  alertType     String      @default("momentum") @map("alert_type") // 'momentum', 'comment', 'rating'
+  threshold     Float?      // Only used for momentum alerts
   isActive      Boolean     @default(true) @map("is_active")
   lastTriggered DateTime?   @map("last_triggered")
   createdAt     DateTime    @default(now()) @map("created_at")
@@ -138,7 +139,9 @@ model Alert {
   user          User        @relation(fields: [userId], references: [id])
   artist        Artist      @relation(fields: [artistId], references: [id])
   
+  @@unique([userId, artistId, alertType]) // One alert per type per artist per user
   @@index([userId, isActive])
+  @@index([artistId, alertType])
   @@map("alerts")
 }
 

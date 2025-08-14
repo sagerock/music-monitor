@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../db/client';
+import { alertTriggerService } from '../services/alert-triggers';
 
 const createRatingSchema = z.object({
   artistId: z.string(),
@@ -129,6 +130,14 @@ export async function ratingsApi(fastify: FastifyInstance) {
           },
         },
       });
+
+      // Trigger rating alerts for users watching this artist
+      await alertTriggerService.triggerRatingAlerts(
+        data.artistId,
+        userId,
+        data.rating,
+        data.review
+      );
 
       return { data: rating };
     }

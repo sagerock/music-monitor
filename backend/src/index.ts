@@ -17,6 +17,7 @@ import { ratingsApi } from './api/ratings';
 import { profileApi } from './api/profile';
 import { followsApi } from './api/follows';
 import { uploadApi } from './api/upload';
+import { notificationsApi } from './api/notifications';
 import { startCronJobs } from './jobs';
 import { authenticateSupabase } from './auth/supabase';
 import { setupMonitoring } from './middleware/monitoring';
@@ -102,7 +103,10 @@ async function start() {
       try {
         await request.jwtVerify();
       } catch (err) {
-        reply.send(err);
+        return reply.status(401).send({
+          success: false,
+          error: 'Authentication required'
+        });
       }
     });
 
@@ -119,6 +123,7 @@ async function start() {
     await fastify.register(profileApi, { prefix: '/api/profile' });
     await fastify.register(followsApi, { prefix: '/api/follows' });
     await fastify.register(uploadApi, { prefix: '/api/upload' });
+    await fastify.register(notificationsApi, { prefix: '/api/notifications' });
 
     if (config.NODE_ENV === 'production') {
       startCronJobs();

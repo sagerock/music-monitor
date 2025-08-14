@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../db/client';
+import { alertTriggerService } from '../services/alert-triggers';
 
 const createCommentSchema = z.object({
   artistId: z.string(),
@@ -90,6 +91,13 @@ export async function commentsApi(fastify: FastifyInstance) {
           },
         },
       });
+
+      // Trigger comment alerts for users watching this artist
+      await alertTriggerService.triggerCommentAlerts(
+        data.artistId, 
+        userId, 
+        data.content
+      );
 
       return { data: comment };
     }

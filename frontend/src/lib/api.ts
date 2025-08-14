@@ -180,8 +180,12 @@ export const alertsApi = {
     return data;
   },
 
-  createAlert: async (artistId: string, threshold: number) => {
-    const { data } = await api.post('/api/alerts', { artistId, threshold });
+  createAlert: async (artistId: string, alertType: 'momentum' | 'comment' | 'rating' = 'momentum', threshold?: number) => {
+    const { data } = await api.post('/api/alerts', { 
+      artistId, 
+      alertType,
+      threshold: alertType === 'momentum' ? threshold : undefined 
+    });
     return data;
   },
 
@@ -577,6 +581,45 @@ export const followApi = {
 
   rejectRequest: async (requestId: string) => {
     const { data } = await api.post(`/api/follows/requests/${requestId}/reject`);
+    return data;
+  },
+};
+
+// Notifications API
+export interface Notification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  data?: any;
+  read: boolean;
+  createdAt: string;
+}
+
+export const notificationsApi = {
+  getNotifications: async (page = 1, limit = 20, unreadOnly = false) => {
+    const { data } = await api.get('/api/notifications', {
+      params: { page, limit, unreadOnly },
+    });
+    return data;
+  },
+
+  markAsRead: async (notificationIds?: string[], markAll = false) => {
+    const { data } = await api.post('/api/notifications/mark-read', {
+      notificationIds,
+      markAll,
+    });
+    return data;
+  },
+
+  deleteNotification: async (id: string) => {
+    const { data } = await api.delete(`/api/notifications/${id}`);
+    return data;
+  },
+
+  getUnreadCount: async () => {
+    const { data } = await api.get('/api/notifications/unread-count');
     return data;
   },
 };

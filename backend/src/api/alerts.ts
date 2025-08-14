@@ -4,7 +4,8 @@ import { prisma } from '../db/client';
 
 const alertBodySchema = z.object({
   artistId: z.string(),
-  threshold: z.number().min(0).max(100),
+  alertType: z.enum(['momentum', 'comment', 'rating']).default('momentum'),
+  threshold: z.number().min(0).max(100).optional(),
 });
 
 const alertUpdateSchema = z.object({
@@ -35,6 +36,7 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
       const serializedAlerts = alerts.map((alert: any) => ({
         ...alert,
         id: alert.id.toString(),
+        alertType: alert.alertType || 'momentum', // Default to momentum for old alerts
         artist: {
           ...alert.artist,
           followers: alert.artist.followers ? alert.artist.followers.toString() : null,
@@ -59,7 +61,15 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
   }, async (request: any, reply) => {
     try {
       const userId = request.user.id;
-      const { artistId, threshold } = alertBodySchema.parse(request.body);
+      const { artistId, alertType, threshold } = alertBodySchema.parse(request.body);
+
+      // Validate threshold is provided for momentum alerts
+      if (alertType === 'momentum' && threshold === undefined) {
+        return reply.status(400).send({
+          success: false,
+          error: 'Threshold is required for momentum alerts',
+        });
+      }
 
       const artist = await prisma.artist.findUnique({
         where: { id: artistId },
@@ -76,6 +86,7 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
         where: {
           userId,
           artistId,
+          alertType,
           isActive: true,
         },
       });
@@ -83,7 +94,7 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
       if (existing) {
         return reply.status(400).send({
           success: false,
-          error: 'Active alert already exists for this artist',
+          error: `Active ${alertType} alert already exists for this artist`,
         });
       }
 
@@ -91,16 +102,27 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
         data: {
           userId,
           artistId,
-          threshold,
+          alertType: alertType || 'momentum',
+          threshold: alertType === 'momentum' ? threshold : null,
         },
         include: {
           artist: true,
         },
       });
 
+      // Serialize BigInt fields
+      const serializedAlert = {
+        ...alert,
+        id: alert.id.toString(),
+        artist: {
+          ...alert.artist,
+          followers: alert.artist.followers ? alert.artist.followers.toString() : null,
+        },
+      };
+
       return reply.send({
         success: true,
-        data: alert,
+        data: serializedAlert,
       });
     } catch (error) {
       fastify.log.error(error);
@@ -141,9 +163,19 @@ export const alertRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
+      // Serialize BigInt fields
+      const serializedAlert = {
+        ...updated,
+        id: updated.id.toString(),
+        artist: {
+          ...updated.artist,
+          followers: updated.artist.followers ? updated.artist.followers.toString() : null,
+        },
+      };
+
       return reply.send({
         success: true,
-        data: updated,
+        data: serializedAlert,
       });
     } catch (error) {
       fastify.log.error(error);

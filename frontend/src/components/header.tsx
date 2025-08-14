@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/auth-provider';
 import { signOut } from '@/lib/supabase';
 import { useState } from 'react';
+import { NotificationsDropdown } from '@/components/notifications-dropdown';
 
 export function Header() {
   const pathname = usePathname();
@@ -56,45 +57,49 @@ export function Header() {
             </nav>
           </div>
           
-          <div className="relative">
-            {user ? (
-              <>
-                <button 
-                  onClick={() => setShowMenu(!showMenu)}
+          <div className="flex items-center gap-2">
+            {user && <NotificationsDropdown />}
+            
+            <div className="relative">
+              {user ? (
+                <>
+                  <button 
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <User className="w-4 h-4" />
+                    <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
+                  </button>
+                  {showMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        onClick={() => setShowMenu(false)}
+                      >
+                        <User className="w-4 h-4" />
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={() => signOut()}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  href="/login"
                   className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
-                </button>
-                {showMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                      onClick={() => setShowMenu(false)}
-                    >
-                      <User className="w-4 h-4" />
-                      My Profile
-                    </Link>
-                    <button
-                      onClick={() => signOut()}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                <User className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign In</span>
-              </Link>
-            )}
+                  <span className="hidden sm:inline">Sign In</span>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
