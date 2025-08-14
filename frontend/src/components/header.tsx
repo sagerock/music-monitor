@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Music, TrendingUp, Star, Bell, User, LogOut, Search } from 'lucide-react';
+import { Music, TrendingUp, Star, Bell, User, LogOut, Search, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/auth-provider';
 import { signOut } from '@/lib/supabase';
@@ -18,6 +18,7 @@ export function Header() {
     { href: '/search', label: 'Add Artists', icon: Search },
     { href: '/watchlist', label: 'Watchlist', icon: Star },
     { href: '/alerts', label: 'Alerts', icon: Bell },
+    { href: '/about', label: 'About', icon: Info },
   ];
 
   return (
