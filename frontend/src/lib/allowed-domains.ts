@@ -106,7 +106,7 @@ export const ALLOWED_DOMAINS = {
     'ascap.com',
     'bmi.com',
     'sesac.com',
-    'sagerock.com'
+    'sagerock.com',
     
     // Music tech
     'soundcharts.com',
