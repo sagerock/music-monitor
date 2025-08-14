@@ -5,7 +5,8 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Loader2, Music2, Mail, Lock } from 'lucide-react';
+import { Loader2, Music2, Mail, Lock, Info, Shield } from 'lucide-react';
+import { isEmailAllowed, getAccessDeniedMessage, getExampleDomains } from '@/lib/allowed-domains';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +22,14 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
+        // Check if email domain is allowed
+        if (!isEmailAllowed(email)) {
+          setShowAccessDenied(true);
+          setIsLoading(false);
+          toast.error('This email domain is not authorized for signup');
+          return;
+        }
+
         // Sign up new user
         const { error, data } = await supabase.auth.signUp({
           email,
@@ -64,6 +74,13 @@ export default function LoginPage() {
       return;
     }
 
+    // Check if email domain is allowed for new users
+    if (isSignUp && !isEmailAllowed(email)) {
+      setShowAccessDenied(true);
+      toast.error('This email domain is not authorized for signup');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOtp({
@@ -87,7 +104,89 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-spotify-green/20 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+        {showAccessDenied ? (
+          // Access Denied Message
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-red-500/20 p-3 rounded-full">
+                <Shield className="w-8 h-8 text-red-400" />
+              </div>
+            </div>
+            
+            <h2 className="text-2xl font-bold text-white text-center mb-4">
+              Industry Access Required
+            </h2>
+            
+            <div className="bg-white/5 rounded-lg p-4 mb-6 border border-white/10">
+              <p className="text-gray-300 text-sm leading-relaxed mb-3">
+                Music Monitor is exclusively for music industry professionals and students.
+              </p>
+              
+              <div className="space-y-2 mb-3">
+                <p className="text-gray-400 text-sm font-semibold">Eligible domains include:</p>
+                <ul className="text-gray-400 text-sm space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-spotify-green mt-0.5">•</span>
+                    <span>Educational institutions (.edu)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-spotify-green mt-0.5">•</span>
+                    <span>Record labels (Universal, Sony, Warner, etc.)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-spotify-green mt-0.5">•</span>
+                    <span>Music platforms (Spotify, Apple Music, etc.)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-spotify-green mt-0.5">•</span>
+                    <span>Music media & industry companies</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
+                <p className="text-yellow-200 text-xs">
+                  <strong>Your email domain:</strong> <span className="font-mono">{email.split('@')[1] || 'not recognized'}</span>
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-white/5 rounded-lg p-4 mb-6 border border-white/10">
+              <p className="text-gray-300 text-sm mb-2">
+                <strong>Are you in the music industry or a student?</strong>
+              </p>
+              <p className="text-gray-400 text-sm">
+                Request access by emailing <a href="mailto:access@musicmonitor.app" className="text-spotify-green hover:underline">access@musicmonitor.app</a> with:
+              </p>
+              <ul className="text-gray-400 text-sm mt-2 space-y-1">
+                <li>• Your name and role</li>
+                <li>• Company/school affiliation</li>
+                <li>• LinkedIn profile or proof of affiliation</li>
+              </ul>
+            </div>
+            
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setShowAccessDenied(false);
+                  setIsSignUp(false);
+                }}
+                className="w-full py-3 bg-spotify-green text-white font-semibold rounded-lg hover:bg-spotify-green/90 transition-colors"
+              >
+                Try Different Email
+              </button>
+              
+              <Link
+                href="/about"
+                className="block w-full py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-colors border border-white/20 text-center"
+              >
+                Learn More About Music Monitor
+              </Link>
+            </div>
+          </div>
+        ) : (
+          // Normal Login/Signup Form
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
           <div className="flex items-center justify-center mb-8">
             <div className="bg-spotify-green/20 p-3 rounded-full">
               <Music2 className="w-8 h-8 text-spotify-green" />
@@ -102,6 +201,17 @@ export default function LoginPage() {
               ? 'Start tracking rising music artists' 
               : 'Continue discovering music trends'}
           </p>
+
+          {isSignUp && (
+            <div className="bg-spotify-green/10 border border-spotify-green/30 rounded-lg p-3 mb-4">
+              <div className="flex items-start gap-2">
+                <Info className="w-4 h-4 text-spotify-green mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-gray-300">
+                  Signup is limited to music industry professionals and students with eligible email domains (.edu, record labels, music companies).
+                </p>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -188,6 +298,7 @@ export default function LoginPage() {
             ← Back to Home
           </Link>
         </div>
+        )}
       </div>
     </div>
   );
