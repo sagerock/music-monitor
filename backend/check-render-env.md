@@ -6,9 +6,13 @@ Please verify these environment variables are set in your Render dashboard:
 
 ### 1. Database Configuration
 ```
-DATABASE_URL=postgresql://postgres.mpskjkezcifsameyfxzz:wzf5ayw5PWZ2pkb*kzd@aws-0-us-east-2.pooler.supabase.com:5432/postgres
+DATABASE_URL=postgresql://postgres.mpskjkezcifsameyfxzz:wzf5ayw5PWZ2pkb%2Akzd@aws-0-us-east-2.pooler.supabase.com:5432/postgres?connect_timeout=30&pool_timeout=30
 ```
-**IMPORTANT**: Use port `5432` (not 6543) for the session pooler which supports all operations.
+**IMPORTANT**: 
+- Use port `5432` for the session pooler
+- The `*` in password is URL encoded as `%2A`
+- Added `connect_timeout=30` and `pool_timeout=30` to handle connection issues
+- Since you upgraded Supabase, no connection_limit is needed
 
 ### 2. Spotify API
 ```
