@@ -1,19 +1,22 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { watchlistApi } from '@/lib/api';
 import { Header } from '@/components/header';
 import Link from 'next/link';
 import { formatNumber, getMomentumColor, getMomentumIcon } from '@/lib/utils';
-import { Loader2, Star, TrendingUp, TrendingDown, Minus, LogIn } from 'lucide-react';
+import { Loader2, Star, TrendingUp, TrendingDown, Minus, LogIn, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/auth-provider';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 export default function WatchlistPage() {
   const { user, loading: authLoading } = useAuth();
   const isLoggedIn = !!user;
+  const queryClient = useQueryClient();
+  const [removingArtist, setRemovingArtist] = useState<string | null>(null);
 
   useEffect(() => {
     // Set the Supabase token in localStorage for API calls
@@ -32,6 +35,26 @@ export default function WatchlistPage() {
     enabled: isLoggedIn,
     retry: false,
   });
+
+  const removeFromWatchlistMutation = useMutation({
+    mutationFn: (artistId: string) => watchlistApi.removeFromWatchlist(artistId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['watchlist'] });
+      toast.success('Artist removed from watchlist');
+      setRemovingArtist(null);
+    },
+    onError: () => {
+      toast.error('Failed to remove artist from watchlist');
+      setRemovingArtist(null);
+    },
+  });
+
+  const handleRemoveFromWatchlist = (e: React.MouseEvent, artistId: string) => {
+    e.preventDefault(); // Prevent navigation to artist page
+    e.stopPropagation(); // Stop event bubbling
+    setRemovingArtist(artistId);
+    removeFromWatchlistMutation.mutate(artistId);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -80,27 +103,43 @@ export default function WatchlistPage() {
               const MomentumIcon = item.momentumChange > 0.5 ? TrendingUp : item.momentumChange < -0.5 ? TrendingDown : Minus;
               
               return (
-                <Link
+                <div
                   key={item.artist.id}
-                  href={`/artist/${item.artist.id}`}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow relative group"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-100">{item.artist.name}</h3>
-                      <div className="flex flex-wrap gap-1">
-                        {item.artist.genres?.slice(0, 2).map((genre: string) => (
-                          <span
-                            key={genre}
-                            className="inline-flex px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full"
-                          >
-                            {genre}
-                          </span>
-                        ))}
+                  <button
+                    onClick={(e) => handleRemoveFromWatchlist(e, item.artist.id)}
+                    disabled={removingArtist === item.artist.id}
+                    className="absolute top-2 right-2 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Remove from watchlist"
+                  >
+                    {removingArtist === item.artist.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                    ) : (
+                      <X className="w-4 h-4 text-gray-500 hover:text-red-500" />
+                    )}
+                  </button>
+                  
+                  <Link
+                    href={`/artist/${item.artist.id}`}
+                    className="block"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-100">{item.artist.name}</h3>
+                        <div className="flex flex-wrap gap-1">
+                          {item.artist.genres?.slice(0, 2).map((genre: string) => (
+                            <span
+                              key={genre}
+                              className="inline-flex px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full"
+                            >
+                              {genre}
+                            </span>
+                          ))}
+                        </div>
                       </div>
+                      <Star className="w-5 h-5 text-yellow-500 fill-current" />
                     </div>
-                    <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                  </div>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
@@ -122,7 +161,8 @@ export default function WatchlistPage() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                  </Link>
+                </div>
               );
             })}
           </div>
