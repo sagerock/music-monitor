@@ -24,11 +24,11 @@ export class YouTubeService {
     });
 
     // Rate limiting: YouTube API allows 10,000 units per day
-    // Channel stats cost 3 units each
-    // Let's be conservative and do max 100 requests per hour
+    // Channel stats cost 3 units each, search costs 100 units
+    // Let's be more reasonable with timing
     this.queue = new PQueue({
       concurrency: 1,
-      interval: 36000, // 36 seconds between requests (100 per hour)
+      interval: 1000, // 1 second between requests
       intervalCap: 1,
     });
   }
@@ -111,6 +111,21 @@ export class YouTubeService {
             
             if (searchResponse.data.items?.[0]) {
               channelId = searchResponse.data.items[0].snippet?.channelId || null;
+            }
+          } else if (pathname.length > 1) {
+            // Handle plain usernames like /remiwolf
+            const username = pathname.substring(1).split('/')[0];
+            console.log(`Searching for YouTube channel: ${username}`);
+            const searchResponse = await this.youtube.search.list({
+              part: ['snippet'],
+              q: username,
+              type: ['channel'],
+              maxResults: 1,
+            });
+            
+            if (searchResponse.data.items?.[0]) {
+              channelId = searchResponse.data.items[0].snippet?.channelId || null;
+              console.log(`Found channel ID ${channelId} for ${username}`);
             }
           }
         } else if (!channelId) {
