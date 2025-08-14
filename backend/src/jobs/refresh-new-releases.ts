@@ -1,5 +1,6 @@
 import { prisma } from '../db/client';
 import { spotifyClient } from '../integrations/spotify';
+import { generateSlug, ensureUniqueSlug } from '../utils/slug';
 
 export async function refreshNewReleases() {
   const startTime = new Date();
@@ -31,10 +32,22 @@ export async function refreshNewReleases() {
 
     for (const spotifyArtist of spotifyArtists) {
       try {
+        // Generate slug for new artists
+        const baseSlug = generateSlug(spotifyArtist.name);
+        const slug = await ensureUniqueSlug(
+          baseSlug,
+          async (testSlug) => {
+            const existing = await prisma.artist.findUnique({ where: { slug: testSlug } });
+            return existing !== null && existing.id !== spotifyArtist.id;
+          },
+          spotifyArtist.id
+        );
+
         await prisma.artist.upsert({
           where: { id: spotifyArtist.id },
           update: {
             name: spotifyArtist.name,
+            slug: slug, // Update slug if name changed
             genres: spotifyArtist.genres,
             popularity: spotifyArtist.popularity,
             followers: BigInt(spotifyArtist.followers.total),
@@ -45,6 +58,7 @@ export async function refreshNewReleases() {
           create: {
             id: spotifyArtist.id,
             name: spotifyArtist.name,
+            slug: slug,
             genres: spotifyArtist.genres,
             popularity: spotifyArtist.popularity,
             followers: BigInt(spotifyArtist.followers.total),

@@ -4,6 +4,7 @@ import { subDays } from 'date-fns';
 interface MomentumData {
   artistId: string;
   name: string;
+  slug: string | null;
   genres: string[];
   currentPopularity: number;
   currentFollowers: number;
@@ -126,6 +127,7 @@ export class MomentumService {
       momentumData.push({
         artistId: artist.id,
         name: artist.name,
+        slug: artist.slug,
         genres: artist.genres,
         currentPopularity: lastSnapshot.popularity || 0,
         currentFollowers: Number(lastSnapshot.followers || 0n),
@@ -285,6 +287,7 @@ export class MomentumService {
     return {
       artistId: artist.id,
       name: artist.name,
+      slug: artist.slug,
       genres: artist.genres,
       currentPopularity: lastSnapshot.popularity || 0,
       currentFollowers: Number(lastSnapshot.followers || 0n),

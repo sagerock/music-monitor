@@ -5,6 +5,7 @@ import { spotifyClient } from '../integrations/spotify';
 import { momentumService } from '../services/momentum';
 import { subDays } from 'date-fns';
 import { cache, getCacheKey } from '../utils/cache';
+import { isValidSlug } from '../utils/slug';
 
 const artistParamsSchema = z.object({
   id: z.string(),
@@ -19,6 +20,9 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { id } = artistParamsSchema.parse(request.params);
       
+      // Check if the ID is actually a slug
+      const isSlug = isValidSlug(id);
+      
       // Cache key for artist details
       const cacheKey = getCacheKey('artist-detail', { id });
       
@@ -31,8 +35,9 @@ export const artistRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
       
+      // Try to find artist by slug first if it looks like a slug, otherwise by ID
       const artist = await prisma.artist.findUnique({
-        where: { id },
+        where: isSlug ? { slug: id } : { id },
         include: {
           tracks: {
             orderBy: { releaseDate: 'desc' },

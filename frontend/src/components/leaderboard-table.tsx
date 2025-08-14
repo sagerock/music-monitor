@@ -59,7 +59,7 @@ export function LeaderboardTable({ artists }: LeaderboardTableProps) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link
-                      href={`/artist/${artist.artistId}`}
+                      href={`/artist/${artist.slug || artist.artistId}`}
                       className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-spotify-green"
                     >
                       {artist.name}
@@ -132,7 +132,7 @@ export function LeaderboardTable({ artists }: LeaderboardTableProps) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link
-                      href={`/artist/${artist.artistId}`}
+                      href={`/artist/${artist.slug || artist.artistId}`}
                       className="text-spotify-green hover:text-spotify-green/80 inline-flex items-center gap-1"
                     >
                       <span className="text-sm">View</span>

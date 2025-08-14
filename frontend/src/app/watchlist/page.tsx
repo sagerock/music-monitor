@@ -121,7 +121,7 @@ export default function WatchlistPage() {
                   </button>
                   
                   <Link
-                    href={`/artist/${item.artist.id}`}
+                    href={`/artist/${item.artist.slug || item.artist.id}`}
                     className="block"
                   >
                     <div className="flex items-start justify-between mb-4">

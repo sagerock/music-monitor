@@ -10,6 +10,7 @@ datasource db {
 model Artist {
   id            String      @id
   name          String
+  slug          String?     @unique // URL-friendly version of name
   genres        String[]    @default([])
   popularity    Int?
   followers     BigInt?
@@ -28,6 +29,7 @@ model Artist {
   comments      Comment[]
   ratings       Rating[]
   
+  @@index([slug])
   @@map("artists")
 }
 
