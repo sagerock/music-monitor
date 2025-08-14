@@ -3,5 +3,6 @@
   "outputDirectory": "frontend/.next",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "rootDirectory": "frontend"
+  "rootDirectory": "frontend",
+  "ignoreCommand": "exit 1"
 }
