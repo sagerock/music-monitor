@@ -5,6 +5,7 @@ import { MomentumData } from '@/lib/api';
 import { cn, formatNumber, formatPercentage, getMomentumColor, getMomentumIcon } from '@/lib/utils';
 import { ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Sparkline } from './sparkline';
+import { SocialGrowthBadge } from './social-growth-badge';
 
 interface LeaderboardTableProps {
   artists: MomentumData[];
@@ -31,6 +32,9 @@ export function LeaderboardTable({ artists }: LeaderboardTableProps) {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Followers
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Social Growth
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Momentum
@@ -103,6 +107,14 @@ export function LeaderboardTable({ artists }: LeaderboardTableProps) {
                         {formatPercentage(artist.deltaFollowersPct)}
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <SocialGrowthBadge 
+                      tiktok={artist.deltaTiktokPct}
+                      instagram={artist.deltaInstagramPct}
+                      youtube={artist.deltaYoutubePct}
+                      compact={true}
+                    />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className={cn(

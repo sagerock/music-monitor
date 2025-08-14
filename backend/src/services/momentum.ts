@@ -10,6 +10,8 @@ interface MomentumData {
   deltaPopularity: number;
   deltaFollowersPct: number;
   deltaTiktokPct: number;
+  deltaInstagramPct: number;
+  deltaYoutubePct: number;
   momentumScore: number;
   sparkline: number[];
 }
@@ -50,6 +52,19 @@ export class MomentumService {
           },
           orderBy: { snapshotDate: 'asc' },
         },
+        socialLinks: {
+          include: {
+            snapshots: {
+              where: {
+                snapshotDate: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              orderBy: { snapshotDate: 'asc' },
+            },
+          },
+        },
       },
     });
 
@@ -57,6 +72,8 @@ export class MomentumService {
     const allDeltaPopularity: number[] = [];
     const allDeltaFollowersPct: number[] = [];
     const allDeltaTiktokPct: number[] = [];
+    const allDeltaInstagramPct: number[] = [];
+    const allDeltaYoutubePct: number[] = [];
 
     for (const artist of artists) {
       if (artist.snapshots.length < 2) continue;
@@ -69,13 +86,40 @@ export class MomentumService {
         ? Number((lastSnapshot.followers || 0n) - firstSnapshot.followers) / Number(firstSnapshot.followers)
         : 0;
       
-      const deltaTiktokPct = firstSnapshot.tiktokMentions && firstSnapshot.tiktokMentions > 0
-        ? ((lastSnapshot.tiktokMentions || 0) - firstSnapshot.tiktokMentions) / firstSnapshot.tiktokMentions
-        : 0;
+      // Calculate social media growth percentages
+      let deltaTiktokPct = 0;
+      let deltaInstagramPct = 0;
+      let deltaYoutubePct = 0;
+
+      // Get social platform data
+      for (const social of artist.socialLinks || []) {
+        if (social.snapshots.length < 2) continue;
+        
+        const firstSocial = social.snapshots[0];
+        const lastSocial = social.snapshots[social.snapshots.length - 1];
+        
+        const growthPct = firstSocial.followerCount && firstSocial.followerCount > 0n
+          ? Number((lastSocial.followerCount || 0n) - firstSocial.followerCount) / Number(firstSocial.followerCount)
+          : 0;
+
+        switch (social.platform) {
+          case 'tiktok':
+            deltaTiktokPct = growthPct;
+            break;
+          case 'instagram':
+            deltaInstagramPct = growthPct;
+            break;
+          case 'youtube':
+            deltaYoutubePct = growthPct;
+            break;
+        }
+      }
 
       allDeltaPopularity.push(deltaPopularity);
       allDeltaFollowersPct.push(deltaFollowersPct);
       allDeltaTiktokPct.push(deltaTiktokPct);
+      allDeltaInstagramPct.push(deltaInstagramPct);
+      allDeltaYoutubePct.push(deltaYoutubePct);
 
       const sparkline = artist.snapshots.map((s: any) => s.popularity || 0);
 
@@ -88,6 +132,8 @@ export class MomentumService {
         deltaPopularity,
         deltaFollowersPct,
         deltaTiktokPct,
+        deltaInstagramPct,
+        deltaYoutubePct,
         momentumScore: 0,
         sparkline,
       });
@@ -99,9 +145,14 @@ export class MomentumService {
       // Use raw percentage growth as momentum for single artists
       const popGrowth = data.deltaPopularity / 10; // Scale popularity change (0-100 range)
       const followerGrowth = data.deltaFollowersPct * 5; // Scale follower percentage
-      const tiktokGrowth = data.deltaTiktokPct * 2; // Scale TikTok percentage
+      const tiktokGrowth = data.deltaTiktokPct * 3; // Scale TikTok percentage
+      const instagramGrowth = data.deltaInstagramPct * 2; // Scale Instagram percentage
+      const youtubeGrowth = data.deltaYoutubePct * 2; // Scale YouTube percentage
       
-      data.momentumScore = popGrowth + followerGrowth + tiktokGrowth;
+      // Weighted combination: Spotify (40%), Social Media (60%)
+      const spotifyScore = popGrowth + followerGrowth;
+      const socialScore = tiktokGrowth + instagramGrowth + youtubeGrowth;
+      data.momentumScore = 0.4 * spotifyScore + 0.6 * socialScore;
     } else {
       // Multiple artists - use z-score normalization
       for (const data of momentumData) {
@@ -110,11 +161,18 @@ export class MomentumService {
         const tiktokZScore = allDeltaTiktokPct.length > 0
           ? this.calculateZScore(data.deltaTiktokPct, allDeltaTiktokPct)
           : 0;
+        const instagramZScore = allDeltaInstagramPct.length > 0
+          ? this.calculateZScore(data.deltaInstagramPct, allDeltaInstagramPct)
+          : 0;
+        const youtubeZScore = allDeltaYoutubePct.length > 0
+          ? this.calculateZScore(data.deltaYoutubePct, allDeltaYoutubePct)
+          : 0;
 
+        // Weighted combination: Spotify growth (40%), Social growth (60%)
         const spotifyGrowth = popZScore + 0.5 * followersZScore;
-        const tiktokGrowth = tiktokZScore;
+        const socialGrowth = 0.4 * tiktokZScore + 0.3 * instagramZScore + 0.3 * youtubeZScore;
         
-        data.momentumScore = 0.8 * spotifyGrowth + 0.2 * tiktokGrowth;
+        data.momentumScore = 0.4 * spotifyGrowth + 0.6 * socialGrowth;
       }
     }
 

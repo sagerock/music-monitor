@@ -94,6 +94,8 @@ export interface MomentumData {
   deltaPopularity: number;
   deltaFollowersPct: number;
   deltaTiktokPct: number;
+  deltaInstagramPct: number;
+  deltaYoutubePct: number;
   momentumScore: number;
   sparkline: number[];
 }
