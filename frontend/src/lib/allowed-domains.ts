@@ -4,11 +4,17 @@
  */
 
 export const ALLOWED_DOMAINS = {
-  // Educational institutions (all .edu domains are allowed)
-  educational: {
-    pattern: /\.edu$/i,
-    description: "Educational institutions"
-  },
+  // Educational institutions - top music schools only
+  educational: [
+    // The Big 3 Music Schools
+    'berklee.edu',        // Berklee College of Music - Indy's school!
+    'nyu.edu',           // NYU Steinhardt, Clive Davis Institute
+    'ucla.edu',          // UCLA Herb Alpert School of Music
+    'g.ucla.edu',        // UCLA Google Apps accounts
+    
+    // Other top music programs (add more as requested)
+    // Students from other schools can email indy@sagerock.com to get added
+  ],
 
   // Major record labels
   recordLabels: [
@@ -117,8 +123,8 @@ export function isEmailAllowed(email: string): boolean {
   
   if (!domain) return false;
 
-  // Check if it's an educational domain
-  if (ALLOWED_DOMAINS.educational.pattern.test(domain)) {
+  // Check if it's an approved educational domain
+  if (ALLOWED_DOMAINS.educational.includes(domain)) {
     return true;
   }
 
@@ -147,17 +153,19 @@ export function getAccessDeniedMessage(email: string): string {
   const domain = email.split('@')[1];
   
   return `
-    Music Monitor is currently available exclusively for music industry professionals and students.
+    Music Monitor is currently available exclusively for music industry professionals and students at select schools.
     
     Accounts are limited to:
-    • Students and staff at educational institutions (.edu)
+    • Students at Berklee, NYU, and UCLA (more schools coming soon)
     • Employees at record labels and music companies
     • Verified music industry professionals
     
     The email domain "${domain}" is not currently authorized.
     
-    If you're a music industry professional or student, you can request access by emailing:
+    If you're a music student or industry professional, you can request access by emailing:
     indy@sagerock.com with proof of your industry or educational affiliation.
+    
+    Students: Please use your school email and mention your music program.
   `;
 }
 
@@ -166,13 +174,13 @@ export function getAccessDeniedMessage(email: string): string {
  */
 export function getExampleDomains(): string[] {
   return [
-    'yourschool.edu',
+    'berklee.edu',
+    'nyu.edu',
+    'ucla.edu',
     'universalmusic.com',
     'sonymusic.com',
     'spotify.com',
     'atlanticrecords.com',
-    'columbia.edu',
-    'berklee.edu',
-    'nyu.edu',
+    'warnermusic.com',
   ];
 }

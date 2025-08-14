@@ -127,7 +127,7 @@ export default function LoginPage() {
                 <ul className="text-gray-400 text-sm space-y-1">
                   <li className="flex items-start gap-2">
                     <span className="text-spotify-green mt-0.5">•</span>
-                    <span>Educational institutions (.edu)</span>
+                    <span>Music students at Berklee, NYU, UCLA</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-spotify-green mt-0.5">•</span>
@@ -207,7 +207,8 @@ export default function LoginPage() {
               <div className="flex items-start gap-2">
                 <Info className="w-4 h-4 text-spotify-green mt-0.5 flex-shrink-0" />
                 <p className="text-xs text-gray-300">
-                  Signup is limited to music industry professionals and students with eligible email domains (.edu, record labels, music companies).
+                  Signup is limited to music industry professionals and students at select schools (Berklee, NYU, UCLA). 
+                  Students from other schools can request access.
                 </p>
               </div>
             </div>

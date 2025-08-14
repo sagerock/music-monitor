@@ -12,7 +12,8 @@ export default function AboutPage() {
   // Get sample domains for display
   const sampleLabels = ALLOWED_DOMAINS.recordLabels.slice(0, 5);
   const sampleIndustry = ALLOWED_DOMAINS.musicIndustry.slice(0, 5);
-  const totalDomains = ALLOWED_DOMAINS.recordLabels.length + 
+  const totalDomains = ALLOWED_DOMAINS.educational.length +
+                       ALLOWED_DOMAINS.recordLabels.length + 
                        ALLOWED_DOMAINS.musicIndustry.length + 
                        ALLOWED_DOMAINS.invited.length;
 
@@ -198,11 +199,15 @@ export default function AboutPage() {
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li className="flex items-start gap-2">
                   <span className="text-spotify-green">✓</span>
-                  <span>All .edu email addresses</span>
+                  <span>Students at Berklee, NYU, UCLA</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-spotify-green">✓</span>
-                  <span>{totalDomains}+ pre-approved industry domains</span>
+                  <span>{totalDomains}+ pre-approved domains</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-spotify-green">✓</span>
+                  <span>More schools added by request</span>
                 </li>
               </ul>
             </div>
@@ -210,7 +215,7 @@ export default function AboutPage() {
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Request Access</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Not on the list? Industry professionals can request access:
+                Students & industry professionals can request access:
               </p>
               <a 
                 href="mailto:indy@sagerock.com?subject=Music Monitor Access Request&body=Please include:%0A- Your name%0A- Company/School%0A- Your role%0A- LinkedIn profile"
@@ -232,38 +237,57 @@ export default function AboutPage() {
             </button>
             
             {showAllDomains ? (
-              <div className="grid md:grid-cols-2 gap-6 text-sm">
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Record Labels</h4>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 max-h-48 overflow-y-auto">
-                    {ALLOWED_DOMAINS.recordLabels.map(domain => (
-                      <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
-                        {domain}
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-3 gap-6 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Music Schools</h4>
+                    <div className="bg-gray-50 dark:bg-gray-900 rounded p-3">
+                      {ALLOWED_DOMAINS.educational.map(domain => (
+                        <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
+                          {domain}
+                        </div>
+                      ))}
+                      <div className="text-spotify-green text-xs mt-2 italic">
+                        Students: Email to add your school!
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Music Industry</h4>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 max-h-48 overflow-y-auto">
-                    {ALLOWED_DOMAINS.musicIndustry.map(domain => (
-                      <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
-                        {domain}
-                      </div>
-                    ))}
+                  
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Record Labels</h4>
+                    <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 max-h-48 overflow-y-auto">
+                      {ALLOWED_DOMAINS.recordLabels.map(domain => (
+                        <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
+                          {domain}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Music Industry</h4>
+                    <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 max-h-48 overflow-y-auto">
+                      {ALLOWED_DOMAINS.musicIndustry.map(domain => (
+                        <div key={domain} className="text-gray-600 dark:text-gray-400 py-0.5">
+                          {domain}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 <p className="mb-2">Examples of approved domains:</p>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <span className="font-medium">Labels:</span> {sampleLabels.join(', ')}...
+                    <span className="font-medium">Schools:</span> berklee.edu, nyu.edu, ucla.edu
                   </div>
                   <div>
-                    <span className="font-medium">Industry:</span> {sampleIndustry.join(', ')}...
+                    <span className="font-medium">Labels:</span> {sampleLabels.slice(0, 3).join(', ')}...
+                  </div>
+                  <div>
+                    <span className="font-medium">Industry:</span> {sampleIndustry.slice(0, 3).join(', ')}...
                   </div>
                 </div>
               </div>
