@@ -31,7 +31,7 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newPlatform, setNewPlatform] = useState<string>('youtube');
+  const [newPlatform, setNewPlatform] = useState<string>('');
   const [newUrl, setNewUrl] = useState('');
   const [error, setError] = useState('');
   const [isUpdatingStats, setIsUpdatingStats] = useState(false);
@@ -149,7 +149,15 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
           )}
           {user && availablePlatforms.length > 0 && (
             <button
-              onClick={() => setShowAddForm(!showAddForm)}
+              onClick={() => {
+                if (!showAddForm) {
+                  // When opening form, set platform to first available
+                  setNewPlatform(availablePlatforms[0]);
+                  setNewUrl('');
+                  setError('');
+                }
+                setShowAddForm(!showAddForm);
+              }}
               className="flex items-center gap-2 px-3 py-1.5 text-sm bg-spotify-green text-white rounded-lg hover:bg-green-600 transition-colors"
             >
               {showAddForm ? (
@@ -181,7 +189,10 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
               <label className="block text-sm font-medium mb-1">Platform</label>
               <select
                 value={newPlatform}
-                onChange={(e) => setNewPlatform(e.target.value)}
+                onChange={(e) => {
+                  setNewPlatform(e.target.value);
+                  setNewUrl(''); // Clear URL when platform changes
+                }}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
               >
                 {availablePlatforms.map(platform => (
@@ -198,7 +209,7 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
                 type="url"
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
-                placeholder={`https://www.${newPlatform}.com/...`}
+                placeholder={newPlatform ? `https://www.${newPlatform}.com/...` : 'Enter profile URL'}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
               />
             </div>
