@@ -175,7 +175,7 @@ model JobLog {
 model ArtistSocial {
   id            BigInt      @id @default(autoincrement())
   artistId      String      @map("artist_id")
-  platform      String      // 'youtube', 'instagram', 'tiktok', 'twitter', 'facebook'
+  platform      String      // 'youtube', 'instagram', 'tiktok', 'twitter', 'facebook', 'bandcamp'
   handle        String?     // @username or channel name
   url           String      // full URL to profile
   channelId     String?     @map("channel_id") // platform-specific ID (YouTube channel ID, etc)

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { socialsApi, ArtistSocial, api } from '@/lib/api';
-import { Plus, Trash2, ExternalLink, Check, X, Youtube, Instagram, Twitter, Facebook, Music2, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Check, X, Youtube, Instagram, Twitter, Facebook, Music2, RefreshCw, Disc3 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 
 interface SocialLinksPanelProps {
@@ -17,6 +17,7 @@ const platformIcons = {
   tiktok: Music2, // Using Music2 as TikTok icon placeholder
   twitter: Twitter,
   facebook: Facebook,
+  bandcamp: Disc3,
 };
 
 const platformColors = {
@@ -25,6 +26,7 @@ const platformColors = {
   tiktok: 'text-gray-900 dark:text-gray-100',
   twitter: 'text-blue-400',
   facebook: 'text-blue-600',
+  bandcamp: 'text-cyan-600',
 };
 
 export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps) {
@@ -123,14 +125,15 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
 
   const socials = socialsData?.data || [];
   const existingPlatforms = new Set(socials.map(s => s.platform));
-  const availablePlatforms = ['youtube', 'instagram', 'tiktok', 'twitter', 'facebook'].filter(
+  const availablePlatforms = ['youtube', 'instagram', 'tiktok', 'twitter', 'facebook', 'bandcamp'].filter(
     p => !existingPlatforms.has(p as any)
   );
 
   const hasYouTubeLinks = socials.some(s => s.platform === 'youtube');
   const hasInstagramLinks = socials.some(s => s.platform === 'instagram');
   const hasFacebookLinks = socials.some(s => s.platform === 'facebook');
-  const hasScrapableLinks = hasYouTubeLinks || hasInstagramLinks || hasFacebookLinks;
+  const hasBandcampLinks = socials.some(s => s.platform === 'bandcamp');
+  const hasScrapableLinks = hasYouTubeLinks || hasInstagramLinks || hasFacebookLinks || hasBandcampLinks;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
@@ -145,7 +148,8 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
               title={`Update ${[
                 hasYouTubeLinks && 'YouTube',
                 hasInstagramLinks && 'Instagram',
-                hasFacebookLinks && 'Facebook'
+                hasFacebookLinks && 'Facebook',
+                hasBandcampLinks && 'Bandcamp'
               ].filter(Boolean).join(' & ')} stats`}
             >
               <RefreshCw className={`w-4 h-4 ${isUpdatingStats ? 'animate-spin' : ''}`} />
@@ -268,20 +272,39 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
                       {social.handle || social.platform.charAt(0).toUpperCase() + social.platform.slice(1)}
                       <ExternalLink className="w-3 h-3" />
                     </a>
-                    {social.followerCount && (
+                    {social.platform !== 'bandcamp' && social.followerCount && (
                       <div className="flex items-center gap-2 text-xs text-gray-500">
                         <span>
-                          {parseInt(social.followerCount).toLocaleString()} 
+                          {parseInt(social.followerCount).toLocaleString()}
                           {social.platform === 'youtube' ? ' subscribers' : ' followers'}
                         </span>
                         {social.growthRate !== null && social.growthRate !== undefined && (
                           <span className={`font-medium ${
-                            social.growthRate > 0 ? 'text-green-600' : 
-                            social.growthRate < 0 ? 'text-red-600' : 
+                            social.growthRate > 0 ? 'text-green-600' :
+                            social.growthRate < 0 ? 'text-red-600' :
                             'text-gray-500'
                           }`}>
                             {social.growthRate > 0 ? '↑' : social.growthRate < 0 ? '↓' : '→'}
                             {Math.abs(social.growthRate).toFixed(1)}%
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {social.platform === 'bandcamp' && social.albumCount !== null && social.albumCount !== undefined && (
+                      <div className="text-xs text-gray-500 font-medium">
+                        🎵 {social.albumCount} {social.albumCount === 1 ? 'release' : 'releases'}
+                      </div>
+                    )}
+                    {social.platform === 'bandcamp' && social.metrics && (
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-1">
+                        {social.metrics.labelName && (
+                          <span className="bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded">
+                            🏷️ {social.metrics.labelName}
+                          </span>
+                        )}
+                        {social.metrics.location && (
+                          <span className="bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded">
+                            📍 {social.metrics.location}
                           </span>
                         )}
                       </div>

@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../db/client';
 
-const platformEnum = z.enum(['youtube', 'instagram', 'tiktok', 'twitter', 'facebook']);
+const platformEnum = z.enum(['youtube', 'instagram', 'tiktok', 'twitter', 'facebook', 'bandcamp']);
 
 const addSocialSchema = z.object({
   artistId: z.string(),
@@ -55,11 +55,22 @@ function extractSocialHandle(url: string, platform: string): { handle?: string; 
       case 'facebook':
         // https://www.facebook.com/artistname
         return { handle: urlObj.pathname.split('/').filter(Boolean)[0] };
+
+      case 'bandcamp':
+        // https://artistname.bandcamp.com or https://bandcamp.com/artistname
+        if (urlObj.hostname !== 'bandcamp.com') {
+          // Subdomain format: artistname.bandcamp.com
+          const subdomain = urlObj.hostname.split('.')[0];
+          return { handle: subdomain };
+        } else {
+          // Path format: bandcamp.com/artistname
+          return { handle: urlObj.pathname.split('/').filter(Boolean)[0] };
+        }
     }
   } catch (error) {
     // Invalid URL
   }
-  
+
   return {};
 }
 
@@ -90,7 +101,9 @@ export const socialsRoutes: FastifyPluginAsync = async (fastify) => {
       // Convert BigInt to string and calculate growth for JSON serialization
       const serializedSocials = await Promise.all(socials.map(async (social: any) => {
         let growthRate = null;
-        
+        let metrics = null;
+        let albumCount = null;
+
         // Calculate growth rate if we have 2 snapshots
         if (social.snapshots.length >= 2) {
           const [recent, previous] = social.snapshots;
@@ -102,12 +115,21 @@ export const socialsRoutes: FastifyPluginAsync = async (fastify) => {
             }
           }
         }
-        
+
+        // Get latest metrics and album count from most recent snapshot
+        if (social.snapshots.length > 0) {
+          const latest = social.snapshots[0];
+          metrics = latest.metrics || null;
+          albumCount = latest.postCount || null;
+        }
+
         return {
           ...social,
           id: social.id.toString(),
           followerCount: social.followerCount?.toString() || null,
           growthRate,
+          albumCount,
+          metrics, // Include Bandcamp-specific metrics (labelName, location, etc.)
           snapshots: undefined, // Don't include raw snapshots in response
         };
       }));

@@ -25,6 +25,7 @@
     "@supabase/supabase-js": "^2.55.0",
     "apify-client": "^2.15.0",
     "axios": "^1.6.7",
+    "bandcamp-fetch": "^3.0.0",
     "date-fns": "^3.3.1",
     "fastify": "^4.26.0",
     "googleapis": "^155.0.1",

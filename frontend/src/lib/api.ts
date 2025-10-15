@@ -98,6 +98,7 @@ export interface MomentumData {
   deltaTiktokPct: number;
   deltaInstagramPct: number;
   deltaYoutubePct: number;
+  deltaBandcampPct: number;
   momentumScore: number;
   sparkline: number[];
 }
@@ -231,7 +232,7 @@ export const authApi = {
 export interface ArtistSocial {
   id: string;
   artistId: string;
-  platform: 'youtube' | 'instagram' | 'tiktok' | 'twitter' | 'facebook';
+  platform: 'youtube' | 'instagram' | 'tiktok' | 'twitter' | 'facebook' | 'bandcamp';
   handle?: string;
   url: string;
   channelId?: string;
@@ -242,6 +243,14 @@ export interface ArtistSocial {
   followerCount?: string;
   lastFetched?: string;
   growthRate?: number | null;
+  albumCount?: number | null;
+  metrics?: {
+    albumCount?: number;
+    supporterCount?: number;
+    labelName?: string;
+    location?: string;
+    description?: string;
+  } | null;
   user?: {
     id: string;
     name?: string;

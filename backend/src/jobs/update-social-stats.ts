@@ -6,6 +6,7 @@ import { twitterService } from '../services/twitter';
 import { facebookService } from '../services/facebook';
 import { simpleInstagramService } from '../services/instagram-simple';
 import { apifyService } from '../services/apify';
+import { bandcampService } from '../services/bandcamp';
 
 export async function updateSocialStats() {
   const startTime = Date.now();
@@ -30,7 +31,7 @@ export async function updateSocialStats() {
     try {
       // Update YouTube stats (uses Apify as fallback if available)
       await youtubeService.updateAllYouTubeStats();
-      
+
       if (useApify) {
         // Use Apify-powered scrapers
         await instagramService.updateAllInstagramStats();
@@ -42,6 +43,9 @@ export async function updateSocialStats() {
         console.log('Apify not configured - Instagram scraping limited, TikTok/Facebook/Twitter disabled');
         await simpleInstagramService.updateAllInstagramStats();
       }
+
+      // Update Bandcamp stats (independent of Apify)
+      await bandcampService.updateAllBandcampStats();
 
       // Clean up if using simple scraper
       if (!useApify) {

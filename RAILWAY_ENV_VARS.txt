@@ -1,0 +1,44 @@
+Railway Environment Variables
+================================
+Copy these into Railway dashboard → Variables tab
+
+REQUIRED VARIABLES:
+-------------------
+
+DATABASE_URL=postgresql://postgres.mpskjkezcifsameyfxzz:bsHxBZ0nkCdfVqTU@aws-0-us-east-2.pooler.supabase.com:5432/postgres?pgbouncer=true&connection_limit=10&pool_timeout=30
+
+SPOTIFY_CLIENT_ID=9284da7cf454497ab5982f11970071f0
+
+SPOTIFY_CLIENT_SECRET=75f695f020654f539af63f404bfc949d
+
+JWT_SECRET=supersecretjwtkey123456789
+
+SUPABASE_URL=https://mpskjkezcifsameyfxzz.supabase.co
+
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wc2tqa2V6Y2lmc2FtZXlmeHp6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTAyOTMwOSwiZXhwIjoyMDcwNjA1MzA5fQ.iQ92Ju4O-Ht6XEhfQdToor5_ftA-JEsGAMWZabOT-NQ
+
+CRON_JOB_SECRET=cronJobSecret123
+
+FRONTEND_URL=https://music-monitor.vercel.app
+
+NODE_ENV=production
+
+LOG_LEVEL=info
+
+
+OPTIONAL VARIABLES (for additional features):
+----------------------------------------------
+
+YOUTUBE_API_KEY=AIzaSyAQZMVKaCQlbGEUtajAoSm1a4gzqlOOvu0
+
+RESEND_API_KEY=optional_resend_api_key
+
+APIFY_TOKEN=optional_apify_token
+
+
+NOTES:
+------
+1. Add each variable one by one in Railway dashboard
+2. Railway will auto-redeploy after you add variables
+3. You can update FRONTEND_URL later once you get your Vercel URL
+4. The DATABASE_URL connects to your existing Supabase database

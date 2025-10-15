@@ -13,6 +13,7 @@ interface MomentumData {
   deltaTiktokPct: number;
   deltaInstagramPct: number;
   deltaYoutubePct: number;
+  deltaBandcampPct: number;
   momentumScore: number;
   sparkline: number[];
 }
@@ -75,6 +76,7 @@ export class MomentumService {
     const allDeltaTiktokPct: number[] = [];
     const allDeltaInstagramPct: number[] = [];
     const allDeltaYoutubePct: number[] = [];
+    const allDeltaBandcampPct: number[] = [];
 
     for (const artist of artists) {
       if (artist.snapshots.length < 2) continue;
@@ -91,14 +93,15 @@ export class MomentumService {
       let deltaTiktokPct = 0;
       let deltaInstagramPct = 0;
       let deltaYoutubePct = 0;
+      let deltaBandcampPct = 0;
 
       // Get social platform data
       for (const social of artist.socialLinks || []) {
         if (social.snapshots.length < 2) continue;
-        
+
         const firstSocial = social.snapshots[0];
         const lastSocial = social.snapshots[social.snapshots.length - 1];
-        
+
         const growthPct = firstSocial.followerCount && firstSocial.followerCount > 0n
           ? Number((lastSocial.followerCount || 0n) - firstSocial.followerCount) / Number(firstSocial.followerCount)
           : 0;
@@ -113,6 +116,9 @@ export class MomentumService {
           case 'youtube':
             deltaYoutubePct = growthPct;
             break;
+          case 'bandcamp':
+            deltaBandcampPct = growthPct;
+            break;
         }
       }
 
@@ -121,6 +127,7 @@ export class MomentumService {
       allDeltaTiktokPct.push(deltaTiktokPct);
       allDeltaInstagramPct.push(deltaInstagramPct);
       allDeltaYoutubePct.push(deltaYoutubePct);
+      allDeltaBandcampPct.push(deltaBandcampPct);
 
       const sparkline = artist.snapshots.map((s: any) => s.popularity || 0);
 
@@ -136,6 +143,7 @@ export class MomentumService {
         deltaTiktokPct,
         deltaInstagramPct,
         deltaYoutubePct,
+        deltaBandcampPct,
         momentumScore: 0,
         sparkline,
       });
@@ -150,10 +158,16 @@ export class MomentumService {
       const tiktokGrowth = data.deltaTiktokPct * 3; // Scale TikTok percentage
       const instagramGrowth = data.deltaInstagramPct * 2; // Scale Instagram percentage
       const youtubeGrowth = data.deltaYoutubePct * 2; // Scale YouTube percentage
-      
+      const bandcampGrowth = data.deltaBandcampPct * 2.5; // Scale Bandcamp percentage (higher weight for indie discovery)
+
+      // Determine if this is an indie-focused genre
+      const indieGenres = ['experimental', 'ambient', 'noise', 'drone', 'industrial', 'electronic', 'indie', 'alternative', 'punk', 'lo-fi'];
+      const isIndieGenre = data.genres.some(g => indieGenres.some(ig => g.toLowerCase().includes(ig)));
+
       // Weighted combination: Spotify (40%), Social Media (60%)
+      // Bandcamp gets higher weight for indie genres
       const spotifyScore = popGrowth + followerGrowth;
-      const socialScore = tiktokGrowth + instagramGrowth + youtubeGrowth;
+      const socialScore = tiktokGrowth + instagramGrowth + youtubeGrowth + (isIndieGenre ? bandcampGrowth * 1.5 : bandcampGrowth * 0.5);
       data.momentumScore = 0.4 * spotifyScore + 0.6 * socialScore;
     } else {
       // Multiple artists - use z-score normalization
@@ -169,11 +183,22 @@ export class MomentumService {
         const youtubeZScore = allDeltaYoutubePct.length > 0
           ? this.calculateZScore(data.deltaYoutubePct, allDeltaYoutubePct)
           : 0;
+        const bandcampZScore = allDeltaBandcampPct.length > 0
+          ? this.calculateZScore(data.deltaBandcampPct, allDeltaBandcampPct)
+          : 0;
+
+        // Determine if this is an indie-focused genre (higher Bandcamp weight)
+        const indieGenres = ['experimental', 'ambient', 'noise', 'drone', 'industrial', 'electronic', 'indie', 'alternative', 'punk', 'lo-fi'];
+        const isIndieGenre = data.genres.some(g => indieGenres.some(ig => g.toLowerCase().includes(ig)));
 
         // Weighted combination: Spotify growth (40%), Social growth (60%)
+        // Bandcamp gets 25-30% weight for indie genres, 10% for mainstream
+        const bandcampWeight = isIndieGenre ? 0.28 : 0.10;
+        const otherSocialWeight = (1 - bandcampWeight) / 3; // Distribute remaining weight among other platforms
+
         const spotifyGrowth = popZScore + 0.5 * followersZScore;
-        const socialGrowth = 0.4 * tiktokZScore + 0.3 * instagramZScore + 0.3 * youtubeZScore;
-        
+        const socialGrowth = otherSocialWeight * tiktokZScore + otherSocialWeight * instagramZScore + otherSocialWeight * youtubeZScore + bandcampWeight * bandcampZScore;
+
         data.momentumScore = 0.4 * spotifyGrowth + 0.6 * socialGrowth;
       }
     }
@@ -231,14 +256,15 @@ export class MomentumService {
     let deltaTiktokPct = 0;
     let deltaInstagramPct = 0;
     let deltaYoutubePct = 0;
+    let deltaBandcampPct = 0;
 
     // Get social platform data
     for (const social of artist.socialLinks || []) {
       if (social.snapshots.length < 2) continue;
-      
+
       const firstSocial = social.snapshots[0];
       const lastSocial = social.snapshots[social.snapshots.length - 1];
-      
+
       const growthPct = firstSocial.followerCount && firstSocial.followerCount > 0n
         ? Number((lastSocial.followerCount || 0n) - firstSocial.followerCount) / Number(firstSocial.followerCount)
         : 0;
@@ -253,6 +279,9 @@ export class MomentumService {
         case 'youtube':
           deltaYoutubePct = growthPct;
           break;
+        case 'bandcamp':
+          deltaBandcampPct = growthPct;
+          break;
       }
     }
 
@@ -265,6 +294,7 @@ export class MomentumService {
       tiktok: genreArtists.map(a => a.deltaTiktokPct),
       instagram: genreArtists.map(a => a.deltaInstagramPct),
       youtube: genreArtists.map(a => a.deltaYoutubePct),
+      bandcamp: genreArtists.map(a => a.deltaBandcampPct),
     };
 
     const popZScore = this.calculateZScore(deltaPopularity, genreDeltas.popularity);
@@ -278,10 +308,21 @@ export class MomentumService {
     const youtubeZScore = genreDeltas.youtube.length > 0
       ? this.calculateZScore(deltaYoutubePct, genreDeltas.youtube)
       : 0;
+    const bandcampZScore = genreDeltas.bandcamp.length > 0
+      ? this.calculateZScore(deltaBandcampPct, genreDeltas.bandcamp)
+      : 0;
+
+    // Determine if this is an indie-focused genre (higher Bandcamp weight)
+    const indieGenres = ['experimental', 'ambient', 'noise', 'drone', 'industrial', 'electronic', 'indie', 'alternative', 'punk', 'lo-fi'];
+    const isIndieGenre = artist.genres.some(g => indieGenres.some(ig => g.toLowerCase().includes(ig)));
 
     // Weighted combination: Spotify growth (40%), Social growth (60%)
+    // Bandcamp gets 25-30% weight for indie genres, 10% for mainstream
+    const bandcampWeight = isIndieGenre ? 0.28 : 0.10;
+    const otherSocialWeight = (1 - bandcampWeight) / 3;
+
     const spotifyGrowth = popZScore + 0.5 * followersZScore;
-    const socialGrowth = 0.4 * tiktokZScore + 0.3 * instagramZScore + 0.3 * youtubeZScore;
+    const socialGrowth = otherSocialWeight * tiktokZScore + otherSocialWeight * instagramZScore + otherSocialWeight * youtubeZScore + bandcampWeight * bandcampZScore;
     const momentumScore = 0.4 * spotifyGrowth + 0.6 * socialGrowth;
 
     return {
@@ -296,6 +337,7 @@ export class MomentumService {
       deltaTiktokPct,
       deltaInstagramPct,
       deltaYoutubePct,
+      deltaBandcampPct,
       momentumScore,
       sparkline,
     };
