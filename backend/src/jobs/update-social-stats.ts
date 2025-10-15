@@ -6,7 +6,6 @@ import { twitterService } from '../services/twitter';
 import { facebookService } from '../services/facebook';
 import { simpleInstagramService } from '../services/instagram-simple';
 import { apifyService } from '../services/apify';
-import { bandcampService } from '../services/bandcamp';
 
 export async function updateSocialStats() {
   const startTime = Date.now();
