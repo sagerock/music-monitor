@@ -56,15 +56,8 @@ const fastify = Fastify({
 async function start() {
   try {
     await fastify.register(cors, {
-      origin: config.NODE_ENV === 'production' 
-        ? [
-            'https://music-monitor.vercel.app', 
-            'https://frontend-sagerocks-projects.vercel.app',
-            'https://frontend-pi-sable-64.vercel.app',
-            'https://frontend-sagerock-sagerocks-projects.vercel.app',
-            /https:\/\/.*\.vercel\.app$/,
-            config.FRONTEND_URL
-          ]
+      origin: config.NODE_ENV === 'production'
+        ? config.FRONTEND_URL
         : config.FRONTEND_URL,
       credentials: true,
     });
