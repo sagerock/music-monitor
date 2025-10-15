@@ -43,9 +43,6 @@ export async function updateSocialStats() {
         await simpleInstagramService.updateAllInstagramStats();
       }
 
-      // Update Bandcamp stats (independent of Apify)
-      await bandcampService.updateAllBandcampStats();
-
       // Clean up if using simple scraper
       if (!useApify) {
         await simpleInstagramService.cleanup();
