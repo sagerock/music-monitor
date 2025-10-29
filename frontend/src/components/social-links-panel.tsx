@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { socialsApi, ArtistSocial, api } from '@/lib/api';
-import { Plus, Trash2, ExternalLink, Check, X, Youtube, Instagram, Twitter, Facebook, Music2, RefreshCw, Disc3 } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Check, X, Youtube, Instagram, Twitter, Facebook, Music2, Disc3 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 
 interface SocialLinksPanelProps {
@@ -36,7 +36,6 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
   const [newPlatform, setNewPlatform] = useState<string>('');
   const [newUrl, setNewUrl] = useState('');
   const [error, setError] = useState('');
-  const [isUpdatingStats, setIsUpdatingStats] = useState(false);
 
   const { data: socialsData, isLoading } = useQuery({
     queryKey: ['artist-socials', artistId],
@@ -88,41 +87,6 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
     addMutation.mutate({ platform: newPlatform, url: newUrl });
   };
 
-  const handleUpdateStats = async () => {
-    setIsUpdatingStats(true);
-    setError('');
-    
-    try {
-      // Use the API URL from environment variable
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/jobs/update-social-stats`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'secret': process.env.NEXT_PUBLIC_CRON_SECRET || 'cronJobSecret123'
-        },
-        body: JSON.stringify({})
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      console.log('Update stats result:', result);
-      
-      // Wait a moment for the update to process
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['artist-socials', artistId] });
-        setIsUpdatingStats(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Failed to update social stats:', error);
-      setError('Failed to update stats. Check console for details.');
-      setIsUpdatingStats(false);
-    }
-  };
-
   const socials = socialsData?.data || [];
   const existingPlatforms = new Set(socials.map(s => s.platform));
   const availablePlatforms = ['youtube', 'instagram', 'tiktok', 'twitter', 'facebook', 'bandcamp'].filter(
@@ -140,22 +104,6 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Social Media Links</h3>
         <div className="flex items-center gap-2">
-          {hasScrapableLinks && (
-            <button
-              onClick={handleUpdateStats}
-              disabled={isUpdatingStats}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-              title={`Update ${[
-                hasYouTubeLinks && 'YouTube',
-                hasInstagramLinks && 'Instagram',
-                hasFacebookLinks && 'Facebook',
-                hasBandcampLinks && 'Bandcamp'
-              ].filter(Boolean).join(' & ')} stats`}
-            >
-              <RefreshCw className={`w-4 h-4 ${isUpdatingStats ? 'animate-spin' : ''}`} />
-              {isUpdatingStats ? 'Updating...' : 'Update Stats'}
-            </button>
-          )}
           {user && availablePlatforms.length > 0 && (
             <button
               onClick={() => {
