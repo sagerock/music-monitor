@@ -1,0 +1,19 @@
+[build]
+builder = "nixpacks"
+
+[build.nixpacksPlan]
+[build.nixpacksPlan.phases.setup]
+nixPkgs = ["nodejs_18", "pnpm"]
+
+[build.nixpacksPlan.phases.install]
+cmds = ["pnpm install"]
+
+[build.nixpacksPlan.phases.build]
+cmds = ["cd frontend && pnpm build"]
+
+[build.nixpacksPlan.start]
+cmd = "cd frontend && pnpm start"
+
+[deploy]
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
