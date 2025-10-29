@@ -7,7 +7,9 @@
     "dev": "pnpm --parallel dev",
     "build": "pnpm --recursive build",
     "lint": "pnpm --recursive lint",
-    "test": "pnpm --recursive test"
+    "test": "pnpm --recursive test",
+    "start:backend": "pnpm --filter @music-monitor/backend start",
+    "start:frontend": "pnpm --filter @music-monitor/frontend start"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
