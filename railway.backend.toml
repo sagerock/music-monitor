@@ -12,7 +12,7 @@ cmds = ["pnpm install"]
 cmds = ["cd backend && pnpm build"]
 
 [build.nixpacksPlan.start]
-cmd = "cd backend && pnpm start:prod"
+cmd = "pnpm --filter=@music-monitor/backend start:prod"
 
 [deploy]
 restartPolicyType = "ON_FAILURE"
