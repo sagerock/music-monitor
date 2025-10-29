@@ -2,10 +2,10 @@
 nixPkgs = ['nodejs_18', 'pnpm']
 
 [phases.install]
-cmds = ['cd .. && pnpm install --filter=@music-monitor/frontend...']
+cmds = ['cd .. && pnpm install --no-frozen-lockfile']
 
 [phases.build]
-cmds = ['cd .. && pnpm --filter=@music-monitor/frontend build']
+cmds = ['pnpm build']
 
 [start]
 cmd = 'pnpm start'
