@@ -1,9 +1,12 @@
 import { prisma } from '../db/client';
 import { momentumService } from '../services/momentum';
-import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 import { config } from '../config';
 
-const resend = config.RESEND_API_KEY ? new Resend(config.RESEND_API_KEY) : null;
+// Configure SendGrid
+if (config.SENDGRID_API_KEY) {
+  sgMail.setApiKey(config.SENDGRID_API_KEY);
+}
 
 export async function checkAlerts() {
   const startTime = new Date();
@@ -48,9 +51,12 @@ export async function checkAlerts() {
             : Infinity;
 
           if (daysSinceLastTrigger > 7) {
-            if (resend) {
-              await resend.emails.send({
-                from: 'Music Monitor <alerts@musicmonitor.app>',
+            if (config.SENDGRID_API_KEY) {
+              await sgMail.send({
+                from: {
+                  email: config.SENDGRID_FROM_EMAIL,
+                  name: 'A&R Club Alerts'
+                },
                 to: alert.user.email,
                 subject: `Momentum Alert: ${alert.artist.name}`,
                 html: `
