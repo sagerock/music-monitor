@@ -43,6 +43,8 @@ export async function profileApi(fastify: FastifyInstance) {
           showActivity: true,
           showWatchlist: true,
           allowFollowers: true,
+          role: true,
+          status: true,
           createdAt: true,
           updatedAt: true,
           _count: {

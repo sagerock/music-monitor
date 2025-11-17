@@ -441,6 +441,8 @@ export interface UserProfile {
   showActivity?: boolean;
   showWatchlist?: boolean;
   allowFollowers?: boolean;
+  role?: 'USER' | 'MODERATOR' | 'ADMIN';
+  status?: 'ACTIVE' | 'SUSPENDED' | 'BANNED';
   createdAt: string;
   updatedAt?: string;
   _count?: {
