@@ -39,64 +39,52 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Our Mission</h2>
           </div>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            A&R Club bridges the gap between music industry students and professional A&R work.
-            We believe that talent scouting shouldn't be a solitary pursuit—it should be a collaborative
-            effort that benefits the entire music ecosystem. By providing data-driven insights and fostering
-            a community of music discovery, we're democratizing the A&R process for students.
+            A&R Club empowers music industry students to develop real-world A&R skills through hands-on talent discovery.
+            We believe that learning to scout talent shouldn't wait until you land your first job—it should start now,
+            with your peers, using the same data-driven tools that professionals use. By fostering a collaborative
+            community of student talent scouts, we're helping you build the portfolio and instincts you need to break
+            into the music industry.
           </p>
         </div>
 
-        {/* Who It's For */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <GraduationCap className="w-6 h-6 text-spotify-green" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">For Students</h3>
-            </div>
-            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Build a portfolio of artists you're tracking to showcase your A&R instincts</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Demonstrate your ability to spot trends before they go mainstream</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Share your watchlist with potential employers to prove your industry knowledge</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Learn from what other aspiring professionals are watching</span>
-              </li>
-            </ul>
+        {/* What You Can Do */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <GraduationCap className="w-6 h-6 text-spotify-green" />
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">What You Can Do</h2>
           </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Briefcase className="w-6 h-6 text-spotify-green" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">For Industry Professionals</h3>
-            </div>
-            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Discover emerging artists through data-driven momentum analysis</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>See what the collective A&R community is watching</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Identify talent scouts with proven track records</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-spotify-green mt-1">•</span>
-                <span>Collaborate with peers to validate your discoveries</span>
-              </li>
-            </ul>
-          </div>
+          <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+            <li className="flex items-start gap-3">
+              <span className="text-spotify-green mt-1 text-xl">•</span>
+              <div>
+                <strong>Build Your A&R Portfolio:</strong> Track emerging artists and showcase your ability to spot talent early
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-spotify-green mt-1 text-xl">•</span>
+              <div>
+                <strong>Prove Your Instincts:</strong> Demonstrate your trend-spotting skills with data that shows you found artists before they went mainstream
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-spotify-green mt-1 text-xl">•</span>
+              <div>
+                <strong>Stand Out to Employers:</strong> Share your curated watchlist and activity history with potential employers during interviews
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-spotify-green mt-1 text-xl">•</span>
+              <div>
+                <strong>Learn from Your Peers:</strong> See what other music industry students are discovering and exchange insights with future A&R professionals
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-spotify-green mt-1 text-xl">•</span>
+              <div>
+                <strong>Connect & Collaborate:</strong> Follow classmates, share discoveries, and build relationships that will last throughout your career
+              </div>
+            </li>
+          </ul>
         </div>
 
         {/* Key Features */}
@@ -169,15 +157,15 @@ export default function AboutPage() {
         <div className="bg-gradient-to-r from-spotify-green/10 to-spotify-green/5 dark:from-spotify-green/20 dark:to-spotify-green/10 rounded-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Our Vision</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-            We envision a future where A&R is no longer a black box, but a transparent, collaborative process.
-            Where students can prove their talent-spotting abilities with data. Where industry professionals
-            can tap into the collective intelligence of thousands of music enthusiasts. Where great artists
-            get discovered faster because more eyes and ears are on the hunt.
+            We believe that music industry students deserve more than just lectures and case studies—you deserve
+            hands-on experience discovering the next generation of artists. A&R Club gives you the platform to
+            build a real track record of talent discovery that you can show to potential employers.
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            A&R Club isn't just a tool—it's a movement to make the music industry more meritocratic,
-            more diverse, and more exciting. By working together, we can ensure that no great artist goes
-            unnoticed and that the next generation of A&R professionals has the tools they need to succeed.
+            This isn't just a tool—it's your launching pad into the music industry. Whether you're studying
+            music business, production, or any related field, A&R Club helps you develop the skills, network,
+            and portfolio that will set you apart when you're ready to start your career. Together, we're
+            building the next generation of music industry leaders.
           </p>
         </div>
 
@@ -189,8 +177,9 @@ export default function AboutPage() {
           </div>
           
           <p className="text-gray-700 dark:text-gray-300 mb-6">
-            A&R Club maintains its quality and focus by limiting access to verified music industry
-            professionals and students. This ensures meaningful connections and serious talent discovery.
+            A&R Club is exclusively for music industry students and recent graduates. By limiting access
+            to verified students, we maintain a collaborative learning environment where everyone is
+            building their skills together.
           </p>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -215,10 +204,10 @@ export default function AboutPage() {
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Request Access</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Students & industry professionals can request access:
+                Students at other schools can request access:
               </p>
               <a
-                href="mailto:indy@sagerock.com?subject=A&R Club Access Request&body=Please include:%0A- Your name%0A- Company/School%0A- Your role%0A- LinkedIn profile"
+                href="mailto:indy@sagerock.com?subject=A&R Club Student Access Request&body=Please include:%0A- Your name%0A- School name%0A- Your program/major%0A- Expected graduation year"
                 className="inline-flex items-center gap-2 text-spotify-green hover:underline text-sm font-medium"
               >
                 <Mail className="w-4 h-4" />
@@ -298,11 +287,11 @@ export default function AboutPage() {
         {/* Call to Action */}
         <div className="text-center bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Join the Community
+            Start Building Your A&R Portfolio
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Whether you're a student looking to break into the industry or a professional seeking the next big thing,
-            A&R Club is your platform for discovery.
+            Join hundreds of music industry students discovering the next generation of artists.
+            Start tracking emerging talent today and build the portfolio that will launch your career.
           </p>
           <div className="flex gap-4 justify-center">
             <Link
