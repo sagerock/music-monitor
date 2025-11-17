@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+// Force this page to be dynamically rendered (no SSR/SSG)
+export const dynamic = 'force-dynamic';
+
 export default function AdminPage() {
   const { user } = useAuth();
   const router = useRouter();
