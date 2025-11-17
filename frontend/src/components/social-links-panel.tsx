@@ -259,7 +259,7 @@ export function SocialLinksPanel({ artistId, artistName }: SocialLinksPanelProps
                     )}
                     {social.user && (
                       <p className="text-xs text-gray-500">
-                        Added by {social.user.name || social.user.email.split('@')[0]}
+                        Added by {social.user.name || social.user.email?.split('@')[0] || 'Unknown User'}
                       </p>
                     )}
                   </div>

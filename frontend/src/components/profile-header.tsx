@@ -16,7 +16,7 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
-  const displayName = profile.name || profile.email.split('@')[0];
+  const displayName = profile.name || profile.email?.split('@')[0] || 'Unknown User';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8">
@@ -42,7 +42,7 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
         <div className="flex-1">
           <div className="mb-4">
             <h1 className="text-2xl font-bold mb-1">{displayName}</h1>
-            {profile.name && (
+            {profile.name && profile.email && (
               <p className="text-sm text-gray-500 dark:text-gray-400">@{profile.email.split('@')[0]}</p>
             )}
           </div>

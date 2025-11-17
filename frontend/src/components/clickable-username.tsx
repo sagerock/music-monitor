@@ -6,13 +6,13 @@ interface ClickableUsernameProps {
   user: {
     id: string;
     name: string | null;
-    email: string;
+    email?: string | null;
   };
   className?: string;
 }
 
 export function ClickableUsername({ user, className = '' }: ClickableUsernameProps) {
-  const displayName = user.name || user.email.split('@')[0];
+  const displayName = user.name || user.email?.split('@')[0] || 'Unknown User';
 
   return (
     <Link

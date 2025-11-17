@@ -73,7 +73,7 @@ export function UserActivity({ userId }: UserActivityProps) {
                   </Link>
                   {activity.item.parent && (
                     <span className="text-xs text-gray-400">
-                      (reply to {activity.item.parent.user.name || activity.item.parent.user.email.split('@')[0]})
+                      (reply to {activity.item.parent.user.name || activity.item.parent.user.email?.split('@')[0] || 'Unknown User'})
                     </span>
                   )}
                 </div>
