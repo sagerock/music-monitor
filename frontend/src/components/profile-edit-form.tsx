@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { UserProfile, profileApi } from '@/lib/api';
-import { Save, X, Shield, Eye, EyeOff, Users, GraduationCap, FileText, Upload, Trash2 } from 'lucide-react';
+import { Save, X, Shield, Eye, EyeOff, Users, GraduationCap, FileText, Upload, Trash2, Lock, Key } from 'lucide-react';
 import { AvatarUpload } from '@/components/avatar-upload';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 interface ProfileEditFormProps {
   profile: UserProfile;
@@ -35,6 +36,17 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
   });
 
   const [isUploadingResume, setIsUploadingResume] = useState(false);
+
+  // Password change state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const updateMutation = useMutation({
     mutationFn: () => {
@@ -113,6 +125,50 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
     } catch (error: any) {
       console.error('Resume delete error:', error);
       toast.error(error.response?.data?.error || 'Failed to delete resume');
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validation
+    if (!passwordData.newPassword || !passwordData.confirmPassword) {
+      toast.error('Please fill in all password fields');
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.newPassword
+      });
+
+      if (error) throw error;
+
+      // Clear password fields
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+
+      toast.success('Password updated successfully');
+    } catch (error: any) {
+      console.error('Password change error:', error);
+      toast.error(error.message || 'Failed to update password');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -452,6 +508,67 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
               </label>
             </div>
+          </div>
+        </div>
+
+        {/* Change Password */}
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Lock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <h3 className="text-lg font-semibold">Change Password</h3>
+          </div>
+
+          <div className="space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium mb-2">New Password</label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  placeholder="Enter new password"
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                >
+                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">At least 6 characters</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Confirm New Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  placeholder="Confirm new password"
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handlePasswordChange}
+              disabled={isChangingPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Key className="w-4 h-4" />
+              {isChangingPassword ? 'Updating Password...' : 'Update Password'}
+            </button>
           </div>
         </div>
 
