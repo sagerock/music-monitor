@@ -126,7 +126,7 @@ export default function AdminPage() {
   // Check if user is not logged in or not admin, redirect
   if (!user) {
     if (typeof window !== 'undefined') {
-      router.push('/login');
+      router.push('/login?redirect=/admin');
     }
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
