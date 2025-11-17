@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { UserProfile } from '@/lib/api';
-import { Calendar, MessageCircle, Star, Heart, Globe, Twitter, Instagram, Youtube, Users, UserCheck } from 'lucide-react';
+import { Calendar, MessageCircle, Star, Heart, Globe, Twitter, Instagram, Youtube, Users, UserCheck, Linkedin, FileText, GraduationCap, BookOpen, Award } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { FaTiktok } from 'react-icons/fa';
 import { FollowersList } from '@/components/followers-list';
@@ -49,6 +49,36 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
 
           {profile.bio && (
             <p className="text-gray-700 dark:text-gray-300 mb-4">{profile.bio}</p>
+          )}
+
+          {/* Professional Information */}
+          {(profile.school || profile.major || profile.graduationYear) && (
+            <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div className="flex items-center gap-2 mb-2">
+                <GraduationCap className="w-4 h-4 text-spotify-green" />
+                <span className="font-semibold text-sm text-gray-700 dark:text-gray-300">Education</span>
+              </div>
+              <div className="space-y-1 text-sm">
+                {profile.school && (
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="text-gray-700 dark:text-gray-300">{profile.school}</span>
+                  </div>
+                )}
+                {profile.major && (
+                  <div className="flex items-center gap-2">
+                    <Award className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="text-gray-700 dark:text-gray-300">{profile.major}</span>
+                  </div>
+                )}
+                {profile.graduationYear && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="text-gray-500 dark:text-gray-400">Class of {profile.graduationYear}</span>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
           {/* Stats */}
@@ -109,14 +139,37 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
             </div>
           </div>
 
-          {/* Social Links */}
+          {/* Social Links and Resume */}
           <div className="flex items-center gap-3">
+            {profile.resumeUrl && (
+              <a
+                href={profile.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-spotify-green text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+                title="View Resume"
+              >
+                <FileText className="w-4 h-4" />
+                Resume
+              </a>
+            )}
+            {profile.linkedin && (
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 transition-colors"
+                title="LinkedIn"
+              >
+                <Linkedin className="w-5 h-5" />
+              </a>
+            )}
             {profile.website && (
               <a
                 href={profile.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-spotify-green transition-colors"
+                className="text-gray-600 hover:text-spotify-green dark:text-gray-400 dark:hover:text-spotify-green transition-colors"
                 title="Website"
               >
                 <Globe className="w-5 h-5" />
@@ -127,7 +180,7 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
                 href={`https://twitter.com/${profile.twitter}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-blue-400 transition-colors"
+                className="text-gray-600 hover:text-blue-400 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
                 title="Twitter"
               >
                 <Twitter className="w-5 h-5" />
@@ -138,7 +191,7 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
                 href={`https://instagram.com/${profile.instagram}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-pink-500 transition-colors"
+                className="text-gray-600 hover:text-pink-500 dark:text-gray-400 dark:hover:text-pink-500 transition-colors"
                 title="Instagram"
               >
                 <Instagram className="w-5 h-5" />
@@ -160,7 +213,7 @@ export function ProfileHeader({ profile, isOwnProfile }: ProfileHeaderProps) {
                 href={`https://youtube.com/@${profile.youtube}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-red-500 transition-colors"
+                className="text-gray-600 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-500 transition-colors"
                 title="YouTube"
               >
                 <Youtube className="w-5 h-5" />
