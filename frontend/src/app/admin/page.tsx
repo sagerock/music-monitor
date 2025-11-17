@@ -42,7 +42,7 @@ export default function AdminPage() {
   });
 
   // Fetch users - only if user is admin
-  const { data: usersData, isLoading } = useQuery({
+  const { data: usersData, isLoading, error: usersError } = useQuery({
     queryKey: ['admin-users', page, search, roleFilter, statusFilter],
     queryFn: () => adminApi.getUsers({
       page,
@@ -52,7 +52,13 @@ export default function AdminPage() {
       status: statusFilter || undefined,
     }),
     enabled: !!user && profile?.data.role === 'ADMIN',
+    retry: 1,
   });
+
+  // Show error if users fetch failed
+  if (usersError) {
+    console.error('Admin users error:', usersError);
+  }
 
   // Mutations
   const updateRoleMutation = useMutation({
@@ -295,32 +301,56 @@ export default function AdminPage() {
 
         {/* Users Table */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Activity
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Joined
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {usersData?.data.map((user) => (
+          {usersError && (
+            <div className="p-6 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
+              <p className="text-red-600 dark:text-red-400">
+                Error loading users: {(usersError as any)?.response?.data?.error || (usersError as Error).message}
+              </p>
+              <p className="text-sm text-red-500 dark:text-red-400 mt-1">
+                Check browser console for details.
+              </p>
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="p-12 text-center">
+              <p className="text-gray-600 dark:text-gray-400">Loading users...</p>
+            </div>
+          )}
+
+          {!isLoading && !usersError && usersData?.data.length === 0 && (
+            <div className="p-12 text-center">
+              <p className="text-gray-600 dark:text-gray-400">No users found</p>
+            </div>
+          )}
+
+          {!isLoading && !usersError && usersData?.data && usersData.data.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      User
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Activity
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Joined
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {usersData?.data.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -359,10 +389,11 @@ export default function AdminPage() {
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Pagination */}
           {usersData && usersData.pagination.totalPages > 1 && (
