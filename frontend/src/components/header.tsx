@@ -30,8 +30,8 @@ export function Header() {
             <Link href="/" className="flex items-center gap-2">
               <Music className="w-8 h-8 text-spotify-green" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Music Monitor</span>
-                <span className="text-xs text-gray-700 dark:text-white">Built by Sage & Indy 🎸</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-gray-100">A&R Club</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">For Music Industry Students</span>
               </div>
             </Link>
             

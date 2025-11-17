@@ -11,6 +11,8 @@ const envSchema = z.object({
   APIFY_TOKEN: z.string().optional(),
   YOUTUBE_API_KEY: z.string().optional(),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
+  // Comma-separated list of allowed frontend URLs (optional)
+  ALLOWED_ORIGINS: z.string().optional(),
   CRON_JOB_SECRET: z.string(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   SUPABASE_URL: z.string(),
@@ -30,6 +32,11 @@ export const config = {
   APIFY_TOKEN: env.APIFY_TOKEN,
   YOUTUBE_API_KEY: env.YOUTUBE_API_KEY,
   FRONTEND_URL: env.FRONTEND_URL,
+  ALLOWED_ORIGINS: env.ALLOWED_ORIGINS
+    ? env.ALLOWED_ORIGINS.split(',').map(url => url.trim())
+    : env.NODE_ENV === 'production'
+      ? ['https://aandr.club', 'https://www.aandr.club', env.FRONTEND_URL]
+      : [env.FRONTEND_URL],
   CRON_JOB_SECRET: env.CRON_JOB_SECRET,
   LOG_LEVEL: env.LOG_LEVEL,
   SUPABASE_URL: env.SUPABASE_URL,

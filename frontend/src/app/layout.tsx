@@ -7,8 +7,8 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Music Monitor - AI-Powered A&R Scouting',
-  description: 'Surface fast-rising artists using Spotify data and social signals',
+  title: 'A&R Club - Discover Rising Artists',
+  description: 'A&R scouting platform for music industry students. Track momentum, analyze trends, and discover fast-rising artists using real-time data.',
 };
 
 export default function RootLayout({

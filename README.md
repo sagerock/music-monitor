@@ -1,6 +1,6 @@
-# Music Monitor - AI-Powered A&R Scouting Assistant
+# A&R Club - Artist Discovery Platform for Music Industry Students
 
-Surface fast-rising artists in selected genres using Spotify audio/metadata and social signals, helping A&R professionals spot who to listen to now.
+Discover fast-rising artists using real-time momentum tracking and social signals. Built for A&R students and music industry professionals to track emerging talent and build their scouting portfolios.
 
 ## Features
 

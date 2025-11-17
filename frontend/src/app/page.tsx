@@ -26,7 +26,7 @@ export default function HomePage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Rising Artists Leaderboard</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Discover fast-rising artists based on momentum scores • Filter by genre to refine results
+            Track emerging talent with real-time momentum scoring • Built for A&R students discovering the next big artists
           </p>
         </div>
 

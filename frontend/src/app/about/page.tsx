@@ -25,10 +25,10 @@ export default function AboutPage() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-            About Music Monitor
+            About A&R Club
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Empowering the next generation of A&R professionals to discover rising talent together
+            Empowering music industry students to discover rising talent together
           </p>
         </div>
 
@@ -39,10 +39,10 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Our Mission</h2>
           </div>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            Music Monitor bridges the gap between aspiring A&R professionals and the music industry. 
-            We believe that talent scouting shouldn't be a solitary pursuit—it should be a collaborative 
-            effort that benefits the entire music ecosystem. By providing data-driven insights and fostering 
-            a community of music discovery, we're democratizing the A&R process.
+            A&R Club bridges the gap between music industry students and professional A&R work.
+            We believe that talent scouting shouldn't be a solitary pursuit—it should be a collaborative
+            effort that benefits the entire music ecosystem. By providing data-driven insights and fostering
+            a community of music discovery, we're democratizing the A&R process for students.
           </p>
         </div>
 
@@ -169,14 +169,14 @@ export default function AboutPage() {
         <div className="bg-gradient-to-r from-spotify-green/10 to-spotify-green/5 dark:from-spotify-green/20 dark:to-spotify-green/10 rounded-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Our Vision</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-            We envision a future where A&R is no longer a black box, but a transparent, collaborative process. 
-            Where students can prove their talent-spotting abilities with data. Where industry professionals 
-            can tap into the collective intelligence of thousands of music enthusiasts. Where great artists 
+            We envision a future where A&R is no longer a black box, but a transparent, collaborative process.
+            Where students can prove their talent-spotting abilities with data. Where industry professionals
+            can tap into the collective intelligence of thousands of music enthusiasts. Where great artists
             get discovered faster because more eyes and ears are on the hunt.
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            Music Monitor isn't just a tool—it's a movement to make the music industry more meritocratic, 
-            more diverse, and more exciting. By working together, we can ensure that no great artist goes 
+            A&R Club isn't just a tool—it's a movement to make the music industry more meritocratic,
+            more diverse, and more exciting. By working together, we can ensure that no great artist goes
             unnoticed and that the next generation of A&R professionals has the tools they need to succeed.
           </p>
         </div>
@@ -189,7 +189,7 @@ export default function AboutPage() {
           </div>
           
           <p className="text-gray-700 dark:text-gray-300 mb-6">
-            Music Monitor maintains its quality and focus by limiting access to verified music industry 
+            A&R Club maintains its quality and focus by limiting access to verified music industry
             professionals and students. This ensures meaningful connections and serious talent discovery.
           </p>
 
@@ -217,8 +217,8 @@ export default function AboutPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 Students & industry professionals can request access:
               </p>
-              <a 
-                href="mailto:indy@sagerock.com?subject=Music Monitor Access Request&body=Please include:%0A- Your name%0A- Company/School%0A- Your role%0A- LinkedIn profile"
+              <a
+                href="mailto:indy@sagerock.com?subject=A&R Club Access Request&body=Please include:%0A- Your name%0A- Company/School%0A- Your role%0A- LinkedIn profile"
                 className="inline-flex items-center gap-2 text-spotify-green hover:underline text-sm font-medium"
               >
                 <Mail className="w-4 h-4" />
@@ -301,8 +301,8 @@ export default function AboutPage() {
             Join the Community
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Whether you're a student looking to break into the industry or a professional seeking the next big thing, 
-            Music Monitor is your platform for discovery.
+            Whether you're a student looking to break into the industry or a professional seeking the next big thing,
+            A&R Club is your platform for discovery.
           </p>
           <div className="flex gap-4 justify-center">
             <Link
@@ -322,8 +322,8 @@ export default function AboutPage() {
 
         {/* Footer */}
         <div className="text-center mt-12 text-sm text-gray-500 dark:text-gray-400">
-          <p>Built with ❤️ by Sage & Indy for the music community</p>
-          <p className="mt-2">© 2024 Music Monitor. Empowering A&R discovery.</p>
+          <p>Built with ❤️ for the music industry student community</p>
+          <p className="mt-2">© 2024 A&R Club. Empowering the next generation of A&R professionals.</p>
         </div>
       </main>
     </div>
