@@ -27,13 +27,21 @@ export default function AdminPage() {
   const [statusFilter, setStatusFilter] = useState<'ACTIVE' | 'SUSPENDED' | 'BANNED' | ''>('');
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
-  // Fetch stats
+  // Check if user has admin role first
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ['my-profile'],
+    queryFn: () => profileApi.getMyProfile(),
+    enabled: !!user, // Only fetch if user is logged in
+  });
+
+  // Fetch stats - only if user is admin
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: () => adminApi.getStats(),
+    enabled: !!user && profile?.data.role === 'ADMIN',
   });
 
-  // Fetch users
+  // Fetch users - only if user is admin
   const { data: usersData, isLoading } = useQuery({
     queryKey: ['admin-users', page, search, roleFilter, statusFilter],
     queryFn: () => adminApi.getUsers({
@@ -43,6 +51,7 @@ export default function AdminPage() {
       role: roleFilter || undefined,
       status: statusFilter || undefined,
     }),
+    enabled: !!user && profile?.data.role === 'ADMIN',
   });
 
   // Mutations
@@ -126,12 +135,16 @@ export default function AdminPage() {
     );
   }
 
-  // Check if user has admin role
-  const { data: profile } = useQuery({
-    queryKey: ['my-profile'],
-    queryFn: () => profileApi.getMyProfile(),
-  });
+  // Show loading while checking role
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    );
+  }
 
+  // Check if user has admin role
   if (profile && profile.data.role !== 'ADMIN') {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
