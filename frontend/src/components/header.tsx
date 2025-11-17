@@ -2,17 +2,30 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Music, TrendingUp, Star, Bell, User, LogOut, Search, Info } from 'lucide-react';
+import { Music, TrendingUp, Star, Bell, User, LogOut, Search, Info, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/auth-provider';
 import { signOut } from '@/lib/supabase';
 import { useState } from 'react';
 import { NotificationsDropdown } from '@/components/notifications-dropdown';
+import { useQuery } from '@tanstack/react-query';
+import { profileApi } from '@/lib/api';
 
 export function Header() {
   const pathname = usePathname();
   const { user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
+
+  // Fetch user profile to check role
+  const { data: profileData } = useQuery({
+    queryKey: ['profile', 'me'],
+    queryFn: () => profileApi.getMyProfile(),
+    enabled: !!user,
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const isAdmin = profileData?.data?.role === 'ADMIN';
 
   const navItems = [
     { href: '/', label: 'Leaderboard', icon: TrendingUp },
@@ -20,6 +33,7 @@ export function Header() {
     { href: '/watchlist', label: 'Watchlist', icon: Star },
     { href: '/alerts', label: 'Alerts', icon: Bell },
     { href: '/about', label: 'About', icon: Info },
+    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: Shield }] : []),
   ];
 
   return (
@@ -80,6 +94,16 @@ export function Header() {
                         <User className="w-4 h-4" />
                         My Profile
                       </Link>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                          onClick={() => setShowMenu(false)}
+                        >
+                          <Shield className="w-4 h-4" />
+                          Admin Dashboard
+                        </Link>
+                      )}
                       <button
                         onClick={() => signOut()}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
