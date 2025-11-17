@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User role enum for access control
+enum UserRole {
+  USER        // Regular user - can view, comment, rate
+  MODERATOR   // Can delete comments/ratings, manage content
+  ADMIN       // Full access - user management, system settings
+}
+
+// User account status
+enum UserStatus {
+  ACTIVE      // Normal active account
+  SUSPENDED   // Temporarily suspended - cannot log in or interact
+  BANNED      // Permanently banned - cannot access platform
+}
+
 model Artist {
   id            String      @id
   name          String
@@ -79,20 +93,27 @@ model User {
   bio           String?     @db.Text
   avatarUrl     String?     @map("avatar_url")
   clerkId       String?     @unique @map("clerk_id")
-  
+
   // Social media handles
   twitter       String?
   instagram     String?
   tiktok        String?
   youtube       String?
   website       String?
-  
+
   // Privacy settings
   isPublic      Boolean     @default(true) @map("is_public")
   showActivity  Boolean     @default(true) @map("show_activity")
   showWatchlist Boolean     @default(true) @map("show_watchlist")
   allowFollowers Boolean    @default(true) @map("allow_followers")
-  
+
+  // Admin & moderation
+  role          UserRole    @default(USER)
+  status        UserStatus  @default(ACTIVE)
+  statusReason  String?     @map("status_reason") @db.Text
+  statusChangedAt DateTime? @map("status_changed_at")
+  statusChangedBy String?   @map("status_changed_by")
+
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
   
