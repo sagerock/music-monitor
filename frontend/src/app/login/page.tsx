@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Loader2, Music2, Mail, Lock, Info, Shield } from 'lucide-react';
 import { isEmailAllowed, getAccessDeniedMessage, getExampleDomains } from '@/lib/allowed-domains';
 
+// Force dynamic rendering to avoid SSR issues with window.location
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -18,13 +20,16 @@ export default function LoginPage() {
   const [showAccessDenied, setShowAccessDenied] = useState(false);
   const [redirectTo, setRedirectTo] = useState<string>('/');
 
-  // Get the redirect URL from query params on mount
+  // Get the redirect URL from query params on mount (client-side only)
   useEffect(() => {
-    const redirect = searchParams.get('redirect');
-    if (redirect) {
-      setRedirectTo(redirect);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      if (redirect) {
+        setRedirectTo(redirect);
+      }
     }
-  }, [searchParams]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
