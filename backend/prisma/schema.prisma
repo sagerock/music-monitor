@@ -94,6 +94,13 @@ model User {
   avatarUrl     String?     @map("avatar_url")
   clerkId       String?     @unique @map("clerk_id")
 
+  // Professional/Student info
+  school        String?     // University/College name
+  graduationYear Int?       @map("graduation_year")
+  major         String?     // e.g., "Music Business", "A&R"
+  resumeUrl     String?     @map("resume_url")
+  linkedin      String?     // LinkedIn profile URL
+
   // Social media handles
   twitter       String?
   instagram     String?

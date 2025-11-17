@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { UserProfile, profileApi } from '@/lib/api';
-import { Save, X, Shield, Eye, EyeOff, Users } from 'lucide-react';
+import { Save, X, Shield, Eye, EyeOff, Users, GraduationCap, FileText, Upload, Trash2 } from 'lucide-react';
 import { AvatarUpload } from '@/components/avatar-upload';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface ProfileEditFormProps {
   profile: UserProfile;
@@ -16,6 +18,11 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
     name: profile.name || '',
     bio: profile.bio || '',
     avatarUrl: profile.avatarUrl || '',
+    school: profile.school || '',
+    graduationYear: profile.graduationYear || null,
+    major: profile.major || '',
+    resumeUrl: profile.resumeUrl || '',
+    linkedin: profile.linkedin || '',
     twitter: profile.twitter || '',
     instagram: profile.instagram || '',
     tiktok: profile.tiktok || '',
@@ -26,6 +33,8 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
     showWatchlist: profile.showWatchlist ?? true,
     allowFollowers: profile.allowFollowers ?? true,
   });
+
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
 
   const updateMutation = useMutation({
     mutationFn: () => {
@@ -46,11 +55,65 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
     updateMutation.mutate();
   };
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const handleChange = (field: string, value: string | boolean | number | null) => {
     setFormData(prev => ({
       ...prev,
       [field]: typeof value === 'string' && value === '' ? null : value,
     }));
+  };
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      toast.error('Only PDF files are allowed for resumes');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Resume file must be less than 10MB');
+      return;
+    }
+
+    setIsUploadingResume(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await api.post('/api/upload/resume', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        setFormData(prev => ({ ...prev, resumeUrl: response.data.data.resumeUrl }));
+        toast.success('Resume uploaded successfully');
+      }
+    } catch (error: any) {
+      console.error('Resume upload error:', error);
+      toast.error(error.response?.data?.error || 'Failed to upload resume');
+    } finally {
+      setIsUploadingResume(false);
+    }
+  };
+
+  const handleResumeDelete = async () => {
+    if (!confirm('Are you sure you want to delete your resume?')) return;
+
+    try {
+      const response = await api.delete('/api/upload/resume');
+      if (response.data.success) {
+        setFormData(prev => ({ ...prev, resumeUrl: '' }));
+        toast.success('Resume deleted successfully');
+      }
+    } catch (error: any) {
+      console.error('Resume delete error:', error);
+      toast.error(error.response?.data?.error || 'Failed to delete resume');
+    }
   };
 
   return (
@@ -104,6 +167,115 @@ export function ProfileEditForm({ profile, onSuccess }: ProfileEditFormProps) {
           <p className="text-xs text-gray-500 mt-1">{formData.bio.length}/500 characters</p>
         </div>
 
+        {/* Professional/Student Info */}
+        <div>
+          <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+            <GraduationCap className="w-5 h-5" />
+            Professional Information
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">School/University</label>
+              <input
+                type="text"
+                value={formData.school}
+                onChange={(e) => handleChange('school', e.target.value)}
+                placeholder="e.g., Berklee College of Music"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                maxLength={100}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Major/Program</label>
+                <input
+                  type="text"
+                  value={formData.major}
+                  onChange={(e) => handleChange('major', e.target.value)}
+                  placeholder="e.g., Music Business"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                  maxLength={100}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Graduation Year</label>
+                <input
+                  type="number"
+                  value={formData.graduationYear || ''}
+                  onChange={(e) => handleChange('graduationYear', e.target.value ? parseInt(e.target.value) : null)}
+                  placeholder="2025"
+                  min="2000"
+                  max="2040"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">LinkedIn Profile</label>
+              <input
+                type="url"
+                value={formData.linkedin}
+                onChange={(e) => handleChange('linkedin', e.target.value)}
+                placeholder="https://linkedin.com/in/yourprofile"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Resume (PDF)
+              </label>
+
+              {formData.resumeUrl ? (
+                <div className="flex items-center gap-3 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900">
+                  <FileText className="w-8 h-8 text-spotify-green" />
+                  <div className="flex-1">
+                    <div className="font-medium">Resume uploaded</div>
+                    <a
+                      href={formData.resumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-spotify-green hover:underline"
+                    >
+                      View Resume
+                    </a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleResumeDelete}
+                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-spotify-green transition-colors">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleResumeUpload}
+                    disabled={isUploadingResume}
+                    className="hidden"
+                    id="resume-upload"
+                  />
+                  <label htmlFor="resume-upload" className="cursor-pointer">
+                    <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {isUploadingResume ? 'Uploading...' : 'Click to upload resume (PDF, max 10MB)'}
+                    </p>
+                  </label>
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                Your resume will be visible to employers viewing your profile
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Social Media */}
         <div>

@@ -157,4 +157,158 @@ export async function uploadApi(fastify: FastifyInstance) {
       }
     }
   );
+
+  // Upload resume
+  fastify.post(
+    '/resume',
+    { preValidation: [fastify.authenticate] },
+    async (request, reply) => {
+      try {
+        const userId = request.user.userId || request.user.id;
+
+        // Get the uploaded file
+        const data = await request.file();
+
+        if (!data) {
+          return reply.code(400).send({
+            success: false,
+            error: 'No file uploaded',
+          });
+        }
+
+        // Validate file type (PDF only for resumes)
+        const allowedTypes = ['application/pdf'];
+        if (!allowedTypes.includes(data.mimetype)) {
+          return reply.code(400).send({
+            success: false,
+            error: 'Invalid file type. Only PDF files are allowed for resumes.',
+          });
+        }
+
+        // Validate file size (10MB limit for PDFs)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const buffer = await data.toBuffer();
+
+        if (buffer.length > maxSize) {
+          return reply.code(400).send({
+            success: false,
+            error: 'File too large. Maximum size is 10MB.',
+          });
+        }
+
+        // Generate unique filename
+        const fileName = `${userId}-${Date.now()}.pdf`;
+        const filePath = `resumes/${fileName}`;
+
+        // Upload to Supabase Storage
+        const { data: _uploadData, error: uploadError } = await supabaseAdmin.storage
+          .from('user-uploads')
+          .upload(filePath, buffer, {
+            contentType: data.mimetype,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          console.error('Supabase upload error:', uploadError);
+
+          // Check if bucket doesn't exist
+          if (uploadError.message?.includes('Bucket not found')) {
+            return reply.code(500).send({
+              success: false,
+              error: 'Storage bucket not configured. Please contact support.',
+            });
+          }
+
+          return reply.code(500).send({
+            success: false,
+            error: `Upload failed: ${uploadError.message}`,
+          });
+        }
+
+        // Get public URL
+        const { data: urlData } = supabaseAdmin.storage
+          .from('user-uploads')
+          .getPublicUrl(filePath);
+
+        const resumeUrl = urlData.publicUrl;
+
+        // Update user's resume URL in database
+        await prisma.user.update({
+          where: { id: userId },
+          data: { resumeUrl },
+        });
+
+        return {
+          success: true,
+          data: {
+            resumeUrl,
+            fileName,
+          },
+        };
+      } catch (error) {
+        console.error('Resume upload error:', error);
+        return reply.code(500).send({
+          success: false,
+          error: 'Internal server error',
+        });
+      }
+    }
+  );
+
+  // Delete resume
+  fastify.delete(
+    '/resume',
+    { preValidation: [fastify.authenticate] },
+    async (request, reply) => {
+      try {
+        const userId = request.user.userId || request.user.id;
+
+        // Get current user to find resume URL
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { resumeUrl: true },
+        });
+
+        if (!user?.resumeUrl) {
+          return reply.code(404).send({
+            success: false,
+            error: 'No resume to delete',
+          });
+        }
+
+        // Extract file path from URL
+        const url = new URL(user.resumeUrl);
+        const pathSegments = url.pathname.split('/');
+        const fileName = pathSegments[pathSegments.length - 1];
+        const filePath = `resumes/${fileName}`;
+
+        // Delete from Supabase Storage
+        const { error: deleteError } = await supabaseAdmin.storage
+          .from('user-uploads')
+          .remove([filePath]);
+
+        if (deleteError) {
+          console.error('Supabase delete error:', deleteError);
+          // Continue anyway, we'll still clear the URL from database
+        }
+
+        // Clear resume URL from database
+        await prisma.user.update({
+          where: { id: userId },
+          data: { resumeUrl: null },
+        });
+
+        return {
+          success: true,
+          message: 'Resume deleted successfully',
+        };
+      } catch (error) {
+        console.error('Resume delete error:', error);
+        return reply.code(500).send({
+          success: false,
+          error: 'Internal server error',
+        });
+      }
+    }
+  );
 }

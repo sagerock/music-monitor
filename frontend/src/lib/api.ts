@@ -432,15 +432,24 @@ export interface UserProfile {
   name: string | null;
   bio: string | null;
   avatarUrl: string | null;
+  // Professional/Student info
+  school: string | null;
+  graduationYear: number | null;
+  major: string | null;
+  resumeUrl: string | null;
+  linkedin: string | null;
+  // Social media
   twitter: string | null;
   instagram: string | null;
   tiktok: string | null;
   youtube: string | null;
   website: string | null;
+  // Privacy
   isPublic?: boolean;
   showActivity?: boolean;
   showWatchlist?: boolean;
   allowFollowers?: boolean;
+  // Admin
   role?: 'USER' | 'MODERATOR' | 'ADMIN';
   status?: 'ACTIVE' | 'SUSPENDED' | 'BANNED';
   createdAt: string;
