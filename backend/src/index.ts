@@ -19,6 +19,7 @@ import { followsApi } from './api/follows';
 import { uploadApi } from './api/upload';
 import { notificationsApi } from './api/notifications';
 import { adminApi } from './api/admin';
+import { activityApi } from './api/activity';
 import { startCronJobs } from './jobs';
 import { authenticateSupabase } from './auth/supabase';
 import { setupMonitoring } from './middleware/monitoring';
@@ -117,6 +118,7 @@ async function start() {
     await fastify.register(uploadApi, { prefix: '/api/upload' });
     await fastify.register(notificationsApi, { prefix: '/api/notifications' });
     await fastify.register(adminApi, { prefix: '/api/admin' });
+    await fastify.register(activityApi, { prefix: '/api/activity' });
 
     if (config.NODE_ENV === 'production') {
       startCronJobs();

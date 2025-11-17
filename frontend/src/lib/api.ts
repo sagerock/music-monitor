@@ -643,3 +643,39 @@ export const notificationsApi = {
     return data;
   },
 };
+
+// Activity API
+export interface CommunityActivity {
+  type: 'comment' | 'rating' | 'watchlist';
+  id: string;
+  userId: string;
+  artistId: string;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    avatarUrl: string | null;
+  };
+  artist: {
+    id: string;
+    name: string;
+    imageUrl: string | null;
+  };
+  // Comment-specific fields
+  content?: string;
+  parentId?: string | null;
+  // Rating-specific fields
+  rating?: number;
+  review?: string | null;
+}
+
+export const activityApi = {
+  getGlobalActivity: async (page = 1, limit = 20) => {
+    const { data } = await api.get('/api/activity/global', {
+      params: { page, limit },
+    });
+    return data;
+  },
+};
