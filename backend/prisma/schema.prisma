@@ -145,10 +145,10 @@ model Watchlist {
   userId        String      @map("user_id")
   artistId      String      @map("artist_id")
   createdAt     DateTime    @default(now()) @map("created_at")
-  
-  user          User        @relation(fields: [userId], references: [id])
-  artist        Artist      @relation(fields: [artistId], references: [id])
-  
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artist        Artist      @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
   @@id([userId, artistId])
   @@map("watchlists")
 }
@@ -163,10 +163,10 @@ model Alert {
   lastTriggered DateTime?   @map("last_triggered")
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
-  
-  user          User        @relation(fields: [userId], references: [id])
-  artist        Artist      @relation(fields: [artistId], references: [id])
-  
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artist        Artist      @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
   @@unique([userId, artistId, alertType]) // One alert per type per artist per user
   @@index([userId, isActive])
   @@index([artistId, alertType])
@@ -217,7 +217,7 @@ model ArtistSocial {
   lastFetched   DateTime?   @map("last_fetched")
   
   artist        Artist      @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  user          User?       @relation(fields: [addedBy], references: [id])
+  user          User?       @relation(fields: [addedBy], references: [id], onDelete: SetNull)
   snapshots     SocialSnapshot[]
   
   @@unique([artistId, platform])
